@@ -28,7 +28,10 @@
     "laravel": {
       "providers": [
         "KgBot\\LaravelLocalization\\LaravelLocalizationServiceProvider"
-      ]
+      ],
+      "aliases": {
+        "ExportLocalization": "KgBot\\LaravelLocalization\\Facades\\ExportLocalizations"
+      }
     }
   },
   "config": {

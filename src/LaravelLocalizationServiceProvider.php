@@ -9,10 +9,8 @@
 namespace KgBot\LaravelLocalization;
 
 
-use Illuminate\Foundation\AliasLoader;
 use Illuminate\Support\ServiceProvider;
 use KgBot\LaravelLocalization\Classes\ExportLocalizations;
-use KgBot\LaravelLocalization\Facades\ExportLocalizations as ExportFacade;
 
 class LaravelLocalizationServiceProvider extends ServiceProvider
 {
@@ -23,9 +21,6 @@ class LaravelLocalizationServiceProvider extends ServiceProvider
 
             return new ExportLocalizations();
         } );
-
-        $loader = AliasLoader::getInstance();
-        $loader->alias( ExportFacade::class, 'ExportLocalization' );
 
         /**
          * Config
