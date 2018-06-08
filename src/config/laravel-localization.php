@@ -11,15 +11,15 @@ return [
     'routes' => [
 
         /**
-         * Route prefix, example of route http://localhost/laravel-deploy/deploy?_token=#################
+         * Route prefix, example of route http://localhost/js/localizations.js
          *
          */
         'prefix'     => env( 'LARAVEL_LOCALIZATION_PREFIX', '/js/localization.js' ),
 
         /**
-         * Middleware used on webhook routes, default middleware is KgBot\LaravelLocalization\Http\Middleware\IsTokenValid
+         * Middleware used on localization routes.
          *
-         * You can add more middleware with .env directive, example LARAVEL_DEPLOY_MIDDLEWARE=webhook,auth:api, etc.
+         * You can add more middleware with .env directive, example LARAVEL_LOCALIZATION_MIDDLEWARE=web,auth:api, etc.
          *
          * Don't use space in .env directive after ,
          */
@@ -30,9 +30,9 @@ return [
     'events' => [
 
         /**
-         * This package emits some events before and after it run's deployment script
+         * This package emits some events after it getters all translation messages
          *
-         * Here you can change channel on which events will be broadcast
+         * Here you can change channel on which events will broadcast
          */
         'channel' => env( 'LARAVEL_LOCALIZATION_EVENTS_CHANNEL', '' ),
     ],
