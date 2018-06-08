@@ -6,14 +6,14 @@
  * Time: 12:18 AM
  */
 
-use ExportLocalization;
+use KgBot\LaravelLocalization\Facades\ExportLocalizations;
 
 /**
  * Localization
  */
 Route::get( config( 'laravel-localization.routes.prefix' ), function () {
 
-    $strings = ExportLocalization::export();
+    $strings = ExportLocalizations::export();
 
     return response()->json( $strings );
 } )->name( 'assets.lang' )->middleware( config( 'laravel-localization.routes.middleware' ) );
