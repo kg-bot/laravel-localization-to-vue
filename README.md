@@ -73,7 +73,6 @@ Second way would be to request it over HTTP just like any other file
 let messages = axios.get('http://localhost/js/lang.js') // This is default route which can be changed in config
 </script>
 ```
-You also have nice route name for blade or any other route call, it's `route('assets.lang')`.
 
 ## Some examples why would you use this package and messages over Laravel standard localization
 
@@ -103,13 +102,13 @@ Vue.prototype.trans = new Lang( { messages, locale: default_locale, fallback: fa
 <b-input v-model="query"
                  type="text"
                  :placeholder="trans.get('search.placeholder')"></b-input>
-```
-
-We have already explained some of this package config directives but that's not all.  
+``` 
 
 ## Routing
 
-This package exposes some routes (only one for now but there will be more of them in next versions)
+This package exposes one route http://localhost/`js/lang.js` by default but you can change the prefix to anything you whish in config file.  
+
+You also have nice route name for blade or any other route call, it's `route('assets.lang')`.
 
 ## Proposals, comments, feedback
 
