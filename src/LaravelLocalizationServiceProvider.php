@@ -6,7 +6,7 @@
  * Time: 11:48 PM
  */
 
-namespace KgBot\LaravelDeploy;
+namespace KgBot\LaravelLocalization;
 
 
 use Illuminate\Foundation\AliasLoader;

@@ -14,16 +14,17 @@ return [
          * Route prefix, example of route http://localhost/laravel-deploy/deploy?_token=#################
          *
          */
-        'prefix'     => env( 'LARAVEL_DEPLOY_PREFIX', '/js/localization.js' ),
+        'prefix'     => env( 'LARAVEL_LOCALIZATION_PREFIX', '/js/localization.js' ),
 
         /**
-         * Middleware used on webhook routes, default middleware is KgBot\LaravelDeploy\Http\Middleware\IsTokenValid
+         * Middleware used on webhook routes, default middleware is KgBot\LaravelLocalization\Http\Middleware\IsTokenValid
          *
          * You can add more middleware with .env directive, example LARAVEL_DEPLOY_MIDDLEWARE=webhook,auth:api, etc.
          *
          * Don't use space in .env directive after ,
          */
-        'middleware' => ( env( 'LARAVEL_DEPLOY_MIDDLEWARE' ) ) ? explode( ',', env( 'LARAVEL_DEPLOY_MIDDLEWARE' ) )
+        'middleware' => ( env( 'LARAVEL_LOCALIZATION_MIDDLEWARE' ) ) ?
+            explode( ',', env( 'LARAVEL_LOCALIZATION_MIDDLEWARE' ) )
             : [],
     ],
     'events' => [
