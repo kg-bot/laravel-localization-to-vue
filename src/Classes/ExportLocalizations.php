@@ -43,13 +43,9 @@ class ExportLocalizations
 
             if ( $lang === 'vendor' ) {
 
-                $package_langs = [];
                 foreach ( $file as $package => $langs ) {
 
-                    $package_lang = [];
-
                     foreach ( $langs as $lang => $messages ) {
-
                         $package_messages = [];
                         foreach ( $messages as $message ) {
 
@@ -59,14 +55,18 @@ class ExportLocalizations
                                 require $file_path;
                         }
 
-                        $package_lang[ $lang ] = $package_messages;
+                        // Here we need for each package language to find if we already have that language in string, if
+                        // we do then join package messages to it, if not create new
+                        if ( in_array( $lang, array_keys( $strings ) ) ) {
 
+                            $strings[ $lang ][ $package ] = $package_messages;
+
+                        } else {
+
+                            $strings[ $lang ] = [ $package => $package_messages ];
+                        }
                     }
-
-                    $package_langs[ $package ] = $package_lang;
                 }
-
-                $strings = array_merge( $strings, $package_langs );
 
             } else {
 
@@ -77,10 +77,16 @@ class ExportLocalizations
 
                     $langs[ ( explode( '.php', basename( $file_path ) ) )[ 0 ] ] = require $file_path;
                 }
-                $languages[ $lang ] = $langs;
-            }
 
-            $strings = array_merge( $strings, $languages );
+                if ( in_array( $lang, array_keys( $strings ) ) ) {
+
+                    array_merge( $strings[ $lang ], $langs );
+
+                } else {
+
+                    $strings[ $lang ] = $langs;
+                }
+            }
         }
 
         event( new LaravelLocalizationExported( $strings ) );
