@@ -1,0 +1,39 @@
+{
+  "name": "kg-bot/laravel-localization-to-vue",
+  "description": "Laravel package used to collect all localization files from resources/lang directory and sub-directories and make them available as JSON file",
+  "require": {
+    "php": ">=7.1",
+    "laravel/framework": "5.*"
+  },
+  "keywords": [
+    "laravel",
+    "vue.js",
+    "trans",
+    "localization",
+    "json"
+  ],
+  "license": "MIT",
+  "authors": [
+    {
+      "name": "Stefan Ninic",
+      "email": "ninicstefan94@gmail.com"
+    }
+  ],
+  "autoload": {
+    "psr-4": {
+      "KgBot\\LaravelLocalization\\": "src/"
+    }
+  },
+  "extra": {
+    "laravel": {
+      "providers": [
+        "KgBot\\LaravelLocalization\\LaravelLocalizationServiceProvider"
+      ]
+    }
+  },
+  "config": {
+    "sort-packages": true
+  },
+  "minimum-stability": "dev",
+  "prefer-stable": true
+}
