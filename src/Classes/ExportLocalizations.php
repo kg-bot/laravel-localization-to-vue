@@ -117,20 +117,28 @@ class ExportLocalizations
      */
     public function toFlat( $array = [], $prefix = '' )
     {
-        $array  = ( count( $array ) ) ? $array : $this->strings;
-        $result = [];
+        function flatten( $array = [], $prefix = '', $default = [] )
+        {
 
-        foreach ( $array as $key => $value ) {
-            $new_key = $prefix . ( empty( $prefix ) ? '' : '.' ) . $key;
+            $array  = ( count( $array ) ) ? $array : $default;
+            $result = [];
 
-            if ( is_array( $value ) ) {
-                $result = array_merge( $result, $this->toFlat( $value, $new_key ) );
-            } else {
-                $result[ $new_key ] = $value;
+            foreach ( $array as $key => $value ) {
+                $new_key = $prefix . ( empty( $prefix ) ? '' : '.' ) . $key;
+
+                if ( is_array( $value ) ) {
+                    $result = array_merge( $result, flatten( $value, $new_key ) );
+                } else {
+                    $result[ $new_key ] = $value;
+                }
             }
+
+            return $result;
         }
 
-        return $result;
+        $results = flatten( $array, $prefix, $this->strings );
+
+        return $results;
     }
 
     public function toJson()
