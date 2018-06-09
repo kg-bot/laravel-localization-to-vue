@@ -115,28 +115,17 @@ class ExportLocalizations
      *
      * @return array
      */
-    public function toFlat( $array = [], $prefix = '' )
+    public function toFlat( $prefix = '.' )
     {
-        function flatten( $array = [], $prefix = '', $default = [] )
-        {
+        $results = [];
+        foreach ( $this->strings as $lang => $strings ) {
 
-            $array  = ( count( $array ) ) ? $array : $default;
-            $result = [];
+            foreach ( $strings as $lang_array => $lang_messages ) {
 
-            foreach ( $array as $key => $value ) {
-                $new_key = $prefix . ( empty( $prefix ) ? '' : '.' ) . $key;
-
-                if ( is_array( $value ) ) {
-                    $result = array_merge( $result, flatten( $value, $new_key ) );
-                } else {
-                    $result[ $new_key ] = $value;
-                }
+                $key             = $lang . $prefix . $lang_array;
+                $results[ $key ] = $lang_messages;
             }
-
-            return $result;
         }
-
-        $results = flatten( $array, $prefix, $this->strings );
 
         return $results;
     }
