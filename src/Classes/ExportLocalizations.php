@@ -13,6 +13,11 @@ use KgBot\LaravelLocalization\Events\LaravelLocalizationExported;
 
 class ExportLocalizations
 {
+    /**
+     * @var $strings array
+     */
+    protected $strings = [];
+
     public function export()
     {
         function dirToArray( $dir )
@@ -91,6 +96,50 @@ class ExportLocalizations
 
         event( new LaravelLocalizationExported( $strings ) );
 
-        return $strings;
+        $this->strings = $strings;
+
+        return $this;
+    }
+
+    public function toArray()
+    {
+        return $this->strings;
+    }
+
+    /**
+     * If you need special format of array that's recognised by some npm localization packages as Lang.js
+     * https://github.com/rmariuzzo/Lang.js use this method
+     *
+     * @param array  $array
+     * @param string $prefix
+     *
+     * @return array
+     */
+    public function toFlat( $array = [], $prefix = '' )
+    {
+        $array  = ( count( $array ) ) ? $array : $this->strings;
+        $result = [];
+
+        foreach ( $array as $key => $value ) {
+            $new_key = $prefix . ( empty( $prefix ) ? '' : '.' ) . $key;
+
+            if ( is_array( $value ) ) {
+                $result = array_merge( $result, $this->toFlat( $value, $new_key ) );
+            } else {
+                $result[ $new_key ] = $value;
+            }
+        }
+
+        return $result;
+    }
+
+    public function toJson()
+    {
+        return json_encode( $this->strings );
+    }
+
+    public function toCollection()
+    {
+        return collect( $this->strings );
     }
 }

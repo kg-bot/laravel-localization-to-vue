@@ -59,7 +59,7 @@ use KgBot\LaravelLocalization\Facades\ExportLocalizations as LaravelLocalization
 View::composer( 'view.file', function ( $view ) {
 
     return $view->with( [
-        'messages' => ExportLocalization::export(),
+        'messages' => ExportLocalization::export()->toArray(),
     ] );
 } );
 ```

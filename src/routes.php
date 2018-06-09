@@ -13,7 +13,7 @@ use KgBot\LaravelLocalization\Facades\ExportLocalizations;
  */
 Route::get( config( 'laravel-localization.routes.prefix' ), function () {
 
-    $strings = ExportLocalizations::export();
+    $strings = ExportLocalizations::export()->toArray();
 
     return response()->json( $strings );
 } )->name( 'assets.lang' )->middleware( config( 'laravel-localization.routes.middleware' ) );
