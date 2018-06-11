@@ -67,9 +67,7 @@ View::composer( 'view.file', function ( $view ) {
 Second way would be to request it over HTTP just like any other file
 
 ```
-
 <script>
-
 let messages = axios.get('http://localhost/js/lang.js') // This is default route which can be changed in config
 </script>
 ```
@@ -79,11 +77,9 @@ let messages = axios.get('http://localhost/js/lang.js') // This is default route
 ```
 // Inside blade view
 <script>
-
     window.default_locale = "{{ config('app.lang') }}";
     window.fallback_locale = "{{ config('app.fallback_locale') }}";
     window.messages = @json($messages);
-
 </script>
 
 // And optionaly you can then use it in any JavaScript file or Vue.js component
@@ -108,7 +104,7 @@ Vue.prototype.trans = new Lang( { messages, locale: default_locale, fallback: fa
 
 This package exposes one route `http://localhost/js/lang.js` by default but you can change the prefix to anything you whish in config file.  
 
-You also have nice route name for blade or any other route call, it's `route('assets.lang')`.
+You can also have a nice route name for blade templates or any other route calls, it's `route('assets.lang')` by default but it's customizable by config/environment file.
 
 ## Proposals, comments, feedback
 
