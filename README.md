@@ -106,7 +106,7 @@ Vue.prototype.trans = new Lang( { messages, locale: default_locale, fallback: fa
 
 ## Routing
 
-This package exposes one route http://localhost/`js/lang.js` by default but you can change the prefix to anything you whish in config file.  
+This package exposes one route `http://localhost/js/lang.js` by default but you can change the prefix to anything you whish in config file.  
 
 You also have nice route name for blade or any other route call, it's `route('assets.lang')`.
 
