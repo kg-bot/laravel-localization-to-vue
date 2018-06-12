@@ -49,7 +49,7 @@ return [
         'key' => 'localization.array',
 
         /**
-         * Timeout of the cached data in minutes
+         * Timeout of the cached data in minutes - set to 0 to disable
          */
         'timeout' => 60,
     ],
