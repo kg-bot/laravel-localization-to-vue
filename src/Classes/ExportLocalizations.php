@@ -9,6 +9,7 @@
 namespace KgBot\LaravelLocalization\Classes;
 
 
+use Illuminate\Support\Facades\Cache;
 use KgBot\LaravelLocalization\Events\LaravelLocalizationExported;
 
 class ExportLocalizations implements \JsonSerializable
@@ -40,12 +41,31 @@ class ExportLocalizations implements \JsonSerializable
      */
     public function export()
     {
+        // Check if value is cached and set array to cached version
+        if( Cache::has( config( 'laravel-localization.caches.key' ) ) ) {
+            $this->strings = Cache::get( config( 'laravel-localization.caches.key' ) );
+            return $this;
+        }
+
+        // Collect language files and build array with translations
         $files = $this->findLanguageFiles( resource_path( 'lang' ) );
 
+        // Parse translations and create final array
         array_walk( $files[ 'lang' ], [ $this, 'parseLangFiles' ] );
         array_walk( $files[ 'vendor' ], [ $this, 'parseVendorFiles' ] );
 
+        // Trigger event for final translated array
         event( new LaravelLocalizationExported( $this->strings ) );
+
+        // If timeout > 0 save array to cache
+        if( config( 'laravel-localization.caches.timeout', 0 ) > 0 ) {
+            Cache::store( config( 'laravel-localization.caches.driver', 'file' ) )
+                ->put(
+                    config( 'laravel-localization.caches.key', 'localization.array' ),
+                    $this->strings,
+                    config( 'laravel-localization.caches.timeout', 60 )
+                );
+        }
 
         return $this;
     }
