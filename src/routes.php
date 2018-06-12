@@ -16,4 +16,5 @@ Route::get( config( 'laravel-localization.routes.prefix' ), function () {
     $strings = ExportLocalizations::export()->toArray();
 
     return response()->json( $strings );
-} )->name( config( 'laravel-localization.routes.name' ) )->middleware( config( 'laravel-localization.routes.middleware' ) );
+} )->name( config( 'laravel-localization.routes.name' ) )
+     ->middleware( config( 'laravel-localization.routes.middleware' ) );
