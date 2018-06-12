@@ -26,7 +26,7 @@ class LaravelLocalizationServiceProvider extends ServiceProvider
          * Config
          */
         $this->mergeConfigFrom(
-            __DIR__ . '//config/laravel-localization.php', 'laravel-localization'
+            __DIR__ . '/config/laravel-localization.php', 'laravel-localization'
         );
 
         $this->publishes( [
