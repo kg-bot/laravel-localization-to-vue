@@ -11,96 +11,60 @@ namespace KgBot\LaravelLocalization\Classes;
 
 use KgBot\LaravelLocalization\Events\LaravelLocalizationExported;
 
-class ExportLocalizations
+class ExportLocalizations implements \JsonSerializable
 {
     /**
      * @var $strings array
      */
     protected $strings = [];
 
+    /**
+     * @var $strings string
+     */
+    protected $phpRegex = '/^.+\.php$/i';
+
+    /**
+     * @var $strings string
+     */
+    protected $excludePath = DIRECTORY_SEPARATOR . 'vendor' . DIRECTORY_SEPARATOR;
+
+    /**
+     * @var $strings string
+     */
+    protected $packageSeparator = '.';
+
+    /**
+     * Method to return generate array with contents of parsed language files
+     *
+     * @return object
+     */
     public function export()
     {
-        function dirToArray( $dir )
-        {
-            $result = [];
+        $files = $this->findLanguageFiles( resource_path( 'lang' ) );
 
-            $cdir = scandir( $dir );
-            foreach ( $cdir as $key => $value ) {
-                if ( !in_array( $value, [ ".", ".." ] ) ) {
-                    if ( is_dir( $dir . DIRECTORY_SEPARATOR . $value ) ) {
-                        $result[ $value ] = dirToArray( $dir . DIRECTORY_SEPARATOR . $value );
-                    } else {
-                        $result[] = $value;
-                    }
-                }
-            }
+        array_walk( $files[ 'lang' ], [ $this, 'parseLangFiles' ] );
+        array_walk( $files[ 'vendor' ], [ $this, 'parseVendorFiles' ] );
 
-            return $result;
-        }
-
-        $files = dirToArray( resource_path( 'lang' ) );
-
-        $strings = [];
-
-        foreach ( $files as $lang => $file ) {
-
-            $languages = [];
-
-            if ( $lang === 'vendor' ) {
-
-                foreach ( $file as $package => $langs ) {
-
-                    foreach ( $langs as $lang => $messages ) {
-                        $package_messages = [];
-                        foreach ( $messages as $message ) {
-
-                            $file_path = resource_path( 'lang/vendor/' . $package . '/' . $lang . '/' . $message );
-
-                            $package_messages[ ( explode( '.php', basename( $file_path ) ) )[ 0 ] ] =
-                                require $file_path;
-                        }
-
-                        // Here we need for each package language to find if we already have that language in string, if
-                        // we do then join package messages to it, if not create new
-                        if ( in_array( $lang, array_keys( $strings ) ) ) {
-
-                            $strings[ $lang ][ $package ] = $package_messages;
-
-                        } else {
-
-                            $strings[ $lang ] = [ $package => $package_messages ];
-                        }
-                    }
-                }
-
-            } else {
-
-                $langs = [];
-                foreach ( $file as $messages ) {
-
-                    $file_path = resource_path( 'lang/' . $lang . '/' . $messages );
-
-                    $langs[ ( explode( '.php', basename( $file_path ) ) )[ 0 ] ] = require $file_path;
-                }
-
-                if ( in_array( $lang, array_keys( $strings ) ) ) {
-
-                    array_merge( $strings[ $lang ], $langs );
-
-                } else {
-
-                    $strings[ $lang ] = $langs;
-                }
-            }
-        }
-
-        event( new LaravelLocalizationExported( $strings ) );
-
-        $this->strings = $strings;
+        event( new LaravelLocalizationExported( $this->strings ) );
 
         return $this;
     }
 
+    /**
+     * Method to return array for json serialization
+     *
+     * @return array
+     */
+    public function jsonSerialize()
+    {
+        return $this->strings;
+    }
+
+    /**
+     * Method to return array
+     *
+     * @return array
+     */
     public function toArray()
     {
         return $this->strings;
@@ -119,10 +83,8 @@ class ExportLocalizations
     {
         $results = [];
         foreach ( $this->strings as $lang => $strings ) {
-
             foreach ( $strings as $lang_array => $lang_messages ) {
-
-                $key             = $lang . $prefix . $lang_array;
+                $key = $lang . $prefix . $lang_array;
                 $results[ $key ] = $lang_messages;
             }
         }
@@ -130,13 +92,105 @@ class ExportLocalizations
         return $results;
     }
 
-    public function toJson()
-    {
-        return json_encode( $this->strings );
-    }
-
+    /**
+     * Method to return array as collection
+     *
+     * @return \Illuminate\Support\Collection
+     */
     public function toCollection()
     {
         return collect( $this->strings );
+    }
+
+    /**
+     * Find available language files and parse them to array
+     *
+     * @param string $path
+     *
+     * @return array
+     */
+    protected function findLanguageFiles( $path ) {
+        // Loop through directories
+        $dirIterator = new \RecursiveDirectoryIterator( $path, \RecursiveDirectoryIterator::SKIP_DOTS );
+        $recIterator = new \RecursiveIteratorIterator( $dirIterator );
+
+        // Fetch only php files - skip others
+        $phpFiles = array_values(
+            array_map( 'current',
+                iterator_to_array(
+                    new \RegexIterator( $recIterator, $this->phpRegex, \RecursiveRegexIterator::GET_MATCH )
+                )
+            )
+        );
+
+        // Sort array by filepath
+        sort( $phpFiles );
+
+        // Remove full path from items
+        array_walk( $phpFiles, function( &$item ) {
+            $item = str_replace( resource_path( 'lang' ), '', $item );
+        });
+
+        // Fetch non-vendor files from filtered php files
+        $nonVendorFiles = array_filter( $phpFiles, function( $file ) {
+            return strpos( $file, $this->excludePath ) === false;
+        });
+
+        // Fetch vendor files from filtered php files
+        $vendorFiles = array_diff( $phpFiles, $nonVendorFiles );
+
+        return [
+            'lang' => array_values( $nonVendorFiles ),
+            'vendor' => array_values( $vendorFiles )
+        ];
+    }
+
+    /**
+     * Method to parse language files
+     *
+     * @param string $file
+     */
+    protected function parseLangFiles( $file ) {
+        // Base package name without file ending
+        $packageName = basename( $file, '.php' );
+
+        // Get package, language and file contents from language file
+        // /<language_code>/(<package/)<filename>.php
+        $language = explode( DIRECTORY_SEPARATOR, $file )[ 1 ];
+        $fileContents = require( resource_path( 'lang' ) . DIRECTORY_SEPARATOR . $file );
+
+        // Check if language already exists in array
+        if( array_key_exists( $language, $this->strings ) ) {
+            $this->strings[ $language ][ $packageName ] = $fileContents;
+        } else {
+            $this->strings[ $language ] = [
+                $packageName => $fileContents
+            ];
+        }
+    }
+
+    /**
+     * Method to parse language files from vendor folder
+     *
+     * @param string $file
+     */
+    protected function parseVendorFiles( $file ) {
+        // Base package name without file ending
+        $packageName = basename( $file, '.php' );
+
+        // Get package, language and file contents from language file
+        // /vendor/<package>/<language_code>/<filename>.php
+        $package = explode( DIRECTORY_SEPARATOR, $file )[ 2 ];
+        $language = explode( DIRECTORY_SEPARATOR, $file )[ 3 ];
+        $fileContents = require( resource_path( 'lang' ) . DIRECTORY_SEPARATOR . $file );
+
+        // Check if language already exists in array
+        if( array_key_exists( $language, $this->strings ) ) {
+            $this->strings[ $language ][ $package . $this->packageSeparator . $packageName ] = $fileContents;
+        } else {
+            $this->strings[ $language ] = [
+                $package . $this->packageSeparator . $packageName => $fileContents
+            ];
+        }
     }
 }
