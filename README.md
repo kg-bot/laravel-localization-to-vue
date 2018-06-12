@@ -37,7 +37,7 @@ and if you want alias add this inside aliases array in config/app.php
 You can export config by running 
 
 ```
-php artisan vendor:publish --provide=KgBot\LaravelLocalization\LaravelLocalizationServiceProvider --tag=config
+php artisan vendor:publish --provider=KgBot\LaravelLocalization\LaravelLocalizationServiceProvider --tag=config
 ```
 
 # Usage
