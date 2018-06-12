@@ -15,6 +15,11 @@ return [
          *
          */
         'prefix'     => env( 'LARAVEL_LOCALIZATION_PREFIX', '/js/localization.js' ),
+      
+        /**
+         * Route name, defaults to assets.lang
+         */
+        'name'       => env( 'LARAVEL_LOCALIZATION_ROUTE_NAME', 'assets.lang' ),
 
         /**
          * Middleware used on localization routes.
