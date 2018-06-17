@@ -3,11 +3,10 @@
  * Created by PhpStorm.
  * User: kgbot
  * Date: 6/8/18
- * Time: 6:12 PM
+ * Time: 6:12 PM.
  */
 
 namespace KgBot\LaravelLocalization\Classes;
-
 
 use Illuminate\Support\Facades\Cache;
 use KgBot\LaravelLocalization\Events\LaravelLocalizationExported;
@@ -15,55 +14,56 @@ use KgBot\LaravelLocalization\Events\LaravelLocalizationExported;
 class ExportLocalizations implements \JsonSerializable
 {
     /**
-     * @var $strings array
+     * @var array
      */
     protected $strings = [];
 
     /**
-     * @var $phpRegex string
+     * @var string
      */
     protected $phpRegex = '/^.+\.php$/i';
 
     /**
-     * @var $excludePath string
+     * @var string
      */
-    protected $excludePath = DIRECTORY_SEPARATOR . 'vendor' . DIRECTORY_SEPARATOR;
+    protected $excludePath = DIRECTORY_SEPARATOR.'vendor'.DIRECTORY_SEPARATOR;
 
     /**
-     * @var $packageSeparator string
+     * @var string
      */
     protected $packageSeparator = '.';
 
     /**
-     * Method to return generate array with contents of parsed language files
+     * Method to return generate array with contents of parsed language files.
      *
      * @return object
      */
     public function export()
     {
         // Check if value is cached and set array to cached version
-        if( Cache::has( config( 'laravel-localization.caches.key' ) ) ) {
-            $this->strings = Cache::get( config( 'laravel-localization.caches.key' ) );
+        if (Cache::has(config('laravel-localization.caches.key'))) {
+            $this->strings = Cache::get(config('laravel-localization.caches.key'));
+
             return $this;
         }
 
         // Collect language files and build array with translations
-        $files = $this->findLanguageFiles( resource_path( 'lang' ) );
+        $files = $this->findLanguageFiles(resource_path('lang'));
 
         // Parse translations and create final array
-        array_walk( $files[ 'lang' ], [ $this, 'parseLangFiles' ] );
-        array_walk( $files[ 'vendor' ], [ $this, 'parseVendorFiles' ] );
+        array_walk($files['lang'], [$this, 'parseLangFiles']);
+        array_walk($files['vendor'], [$this, 'parseVendorFiles']);
 
         // Trigger event for final translated array
-        event( new LaravelLocalizationExported( $this->strings ) );
+        event(new LaravelLocalizationExported($this->strings));
 
         // If timeout > 0 save array to cache
-        if( config( 'laravel-localization.caches.timeout', 0 ) > 0 ) {
-            Cache::store( config( 'laravel-localization.caches.driver', 'file' ) )
+        if (config('laravel-localization.caches.timeout', 0) > 0) {
+            Cache::store(config('laravel-localization.caches.driver', 'file'))
                 ->put(
-                    config( 'laravel-localization.caches.key', 'localization.array' ),
+                    config('laravel-localization.caches.key', 'localization.array'),
                     $this->strings,
-                    config( 'laravel-localization.caches.timeout', 60 )
+                    config('laravel-localization.caches.timeout', 60)
                 );
         }
 
@@ -71,51 +71,51 @@ class ExportLocalizations implements \JsonSerializable
     }
 
     /**
-     * Find available language files and parse them to array
+     * Find available language files and parse them to array.
      *
      * @param string $path
      *
      * @return array
      */
-    protected function findLanguageFiles( $path )
+    protected function findLanguageFiles($path)
     {
         // Loop through directories
-        $dirIterator = new \RecursiveDirectoryIterator( $path, \RecursiveDirectoryIterator::SKIP_DOTS );
-        $recIterator = new \RecursiveIteratorIterator( $dirIterator );
+        $dirIterator = new \RecursiveDirectoryIterator($path, \RecursiveDirectoryIterator::SKIP_DOTS);
+        $recIterator = new \RecursiveIteratorIterator($dirIterator);
 
         // Fetch only php files - skip others
         $phpFiles = array_values(
-            array_map( 'current',
+            array_map('current',
                 iterator_to_array(
-                    new \RegexIterator( $recIterator, $this->phpRegex, \RecursiveRegexIterator::GET_MATCH )
+                    new \RegexIterator($recIterator, $this->phpRegex, \RecursiveRegexIterator::GET_MATCH)
                 )
             )
         );
 
         // Sort array by filepath
-        sort( $phpFiles );
+        sort($phpFiles);
 
         // Remove full path from items
-        array_walk( $phpFiles, function ( &$item ) {
-            $item = str_replace( resource_path( 'lang' ), '', $item );
-        } );
+        array_walk($phpFiles, function (&$item) {
+            $item = str_replace(resource_path('lang'), '', $item);
+        });
 
         // Fetch non-vendor files from filtered php files
-        $nonVendorFiles = array_filter( $phpFiles, function ( $file ) {
-            return strpos( $file, $this->excludePath ) === false;
-        } );
+        $nonVendorFiles = array_filter($phpFiles, function ($file) {
+            return strpos($file, $this->excludePath) === false;
+        });
 
         // Fetch vendor files from filtered php files
-        $vendorFiles = array_diff( $phpFiles, $nonVendorFiles );
+        $vendorFiles = array_diff($phpFiles, $nonVendorFiles);
 
         return [
-            'lang'   => array_values( $nonVendorFiles ),
-            'vendor' => array_values( $vendorFiles ),
+            'lang'   => array_values($nonVendorFiles),
+            'vendor' => array_values($vendorFiles),
         ];
     }
 
     /**
-     * Method to return array for json serialization
+     * Method to return array for json serialization.
      *
      * @return array
      */
@@ -125,7 +125,7 @@ class ExportLocalizations implements \JsonSerializable
     }
 
     /**
-     * Method to return array
+     * Method to return array.
      *
      * @return array
      */
@@ -136,20 +136,20 @@ class ExportLocalizations implements \JsonSerializable
 
     /**
      * If you need special format of array that's recognised by some npm localization packages as Lang.js
-     * https://github.com/rmariuzzo/Lang.js use this method
+     * https://github.com/rmariuzzo/Lang.js use this method.
      *
      * @param array  $array
      * @param string $prefix
      *
      * @return array
      */
-    public function toFlat( $prefix = '.' )
+    public function toFlat($prefix = '.')
     {
         $results = [];
-        foreach ( $this->strings as $lang => $strings ) {
-            foreach ( $strings as $lang_array => $lang_messages ) {
-                $key             = $lang . $prefix . $lang_array;
-                $results[ $key ] = $lang_messages;
+        foreach ($this->strings as $lang => $strings) {
+            foreach ($strings as $lang_array => $lang_messages) {
+                $key = $lang.$prefix.$lang_array;
+                $results[$key] = $lang_messages;
             }
         }
 
@@ -157,62 +157,62 @@ class ExportLocalizations implements \JsonSerializable
     }
 
     /**
-     * Method to return array as collection
+     * Method to return array as collection.
      *
      * @return \Illuminate\Support\Collection
      */
     public function toCollection()
     {
-        return collect( $this->strings );
+        return collect($this->strings);
     }
 
     /**
-     * Method to parse language files
+     * Method to parse language files.
      *
      * @param string $file
      */
-    protected function parseLangFiles( $file )
+    protected function parseLangFiles($file)
     {
         // Base package name without file ending
-        $packageName = basename( $file, '.php' );
+        $packageName = basename($file, '.php');
 
         // Get package, language and file contents from language file
         // /<language_code>/(<package/)<filename>.php
-        $language     = explode( DIRECTORY_SEPARATOR, $file )[ 1 ];
-        $fileContents = require( resource_path( 'lang' ) . DIRECTORY_SEPARATOR . $file );
+        $language = explode(DIRECTORY_SEPARATOR, $file)[1];
+        $fileContents = require resource_path('lang').DIRECTORY_SEPARATOR.$file;
 
         // Check if language already exists in array
-        if ( array_key_exists( $language, $this->strings ) ) {
-            $this->strings[ $language ][ $packageName ] = $fileContents;
+        if (array_key_exists($language, $this->strings)) {
+            $this->strings[$language][$packageName] = $fileContents;
         } else {
-            $this->strings[ $language ] = [
+            $this->strings[$language] = [
                 $packageName => $fileContents,
             ];
         }
     }
 
     /**
-     * Method to parse language files from vendor folder
+     * Method to parse language files from vendor folder.
      *
      * @param string $file
      */
-    protected function parseVendorFiles( $file )
+    protected function parseVendorFiles($file)
     {
         // Base package name without file ending
-        $packageName = basename( $file, '.php' );
+        $packageName = basename($file, '.php');
 
         // Get package, language and file contents from language file
         // /vendor/<package>/<language_code>/<filename>.php
-        $package      = explode( DIRECTORY_SEPARATOR, $file )[ 2 ];
-        $language     = explode( DIRECTORY_SEPARATOR, $file )[ 3 ];
-        $fileContents = require( resource_path( 'lang' ) . DIRECTORY_SEPARATOR . $file );
+        $package = explode(DIRECTORY_SEPARATOR, $file)[2];
+        $language = explode(DIRECTORY_SEPARATOR, $file)[3];
+        $fileContents = require resource_path('lang').DIRECTORY_SEPARATOR.$file;
 
         // Check if language already exists in array
-        if ( array_key_exists( $language, $this->strings ) ) {
-            $this->strings[ $language ][ $package . $this->packageSeparator . $packageName ] = $fileContents;
+        if (array_key_exists($language, $this->strings)) {
+            $this->strings[$language][$package.$this->packageSeparator.$packageName] = $fileContents;
         } else {
-            $this->strings[ $language ] = [
-                $package . $this->packageSeparator . $packageName => $fileContents,
+            $this->strings[$language] = [
+                $package.$this->packageSeparator.$packageName => $fileContents,
             ];
         }
     }
