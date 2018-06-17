@@ -3,16 +3,15 @@
  * Created by PhpStorm.
  * User: kgbot
  * Date: 6/4/18
- * Time: 1:18 AM
+ * Time: 1:18 AM.
  */
 
 namespace KgBot\LaravelLocalization\Events;
 
-
-use Illuminate\Broadcasting\InteractsWithSockets;
+use Illuminate\Queue\SerializesModels;
 use Illuminate\Broadcasting\PrivateChannel;
 use Illuminate\Foundation\Events\Dispatchable;
-use Illuminate\Queue\SerializesModels;
+use Illuminate\Broadcasting\InteractsWithSockets;
 
 class LaravelLocalizationExported
 {
@@ -20,7 +19,7 @@ class LaravelLocalizationExported
 
     public $messages;
 
-    public function __construct( $messages )
+    public function __construct($messages)
     {
         $this->messages = $messages;
     }
@@ -32,6 +31,6 @@ class LaravelLocalizationExported
      */
     public function broadcastOn()
     {
-        return new PrivateChannel( config( 'laravel-localization.events.channel', 'channel-name' ) );
+        return new PrivateChannel(config('laravel-localization.events.channel', 'channel-name'));
     }
 }
