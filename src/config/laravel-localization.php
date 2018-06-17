@@ -12,9 +12,10 @@ return [
 
         /**
          * Route prefix, example of route http://localhost/js/localizations.js
+         *
          */
         'prefix'     => env( 'LARAVEL_LOCALIZATION_PREFIX', '/js/localization.js' ),
-
+      
         /**
          * Route name, defaults to assets.lang
          */
@@ -40,4 +41,22 @@ return [
          */
         'channel' => env( 'LARAVEL_LOCALIZATION_EVENTS_CHANNEL', '' ),
     ],
+    'caches' => [
+        
+        /**
+         * What cache driver do you want to use - more information: https://laravel.com/docs/5.6/cache#driver-prerequisites
+         */
+        'driver' => 'file',
+
+        /**
+         * Key name of the cache entry for the localization array
+         */
+        'key' => 'localization.array',
+
+        /**
+         * Timeout of the cached data in minutes - set to 0 to disable
+         */
+        'timeout' => 60,
+    ],
+    
 ];
