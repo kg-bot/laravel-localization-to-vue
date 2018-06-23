@@ -212,7 +212,7 @@ class ExportLocalizations implements \JsonSerializable
             // Check if package already exists in language
             if ( array_key_exists( $package, $this->strings[ $language ] ) ) {
 
-                array_push( $this->strings[ $language ][ $package ], [ $packageName => $fileContents ] );
+                $this->strings[ $language ][ $package ][ $packageName ] = $fileContents;
             } else {
 
                 $this->strings[ $language ][ $package ] = [ $packageName => $fileContents ];
