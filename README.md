@@ -72,6 +72,9 @@ let messages = axios.get('http://localhost/js/lang.js') // This is default route
 </script>
 ```
 
+You can also export messages to ECMAScript 6 standard JavaScript module with artisan command
+```` php artisan export:messages ````
+
 ## Some examples why would you use this package and messages over Laravel standard localization
 
 ```
