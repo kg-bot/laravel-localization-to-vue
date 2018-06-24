@@ -16,30 +16,30 @@ class LaravelLocalizationServiceProvider extends ServiceProvider
 {
     public function boot()
     {
-        $this->app->bind( 'export-localization', function () {
+        $this->app->bind('export-localization', function () {
             return new ExportLocalizations();
-        } );
+        });
 
         /*
          * Config
          */
         $this->mergeConfigFrom(
-            __DIR__ . '/config/laravel-localization.php', 'laravel-localization'
+            __DIR__.'/config/laravel-localization.php', 'laravel-localization'
         );
 
-        $this->publishes( [
-            __DIR__ . '/config/laravel-localization.php' => config_path( 'laravel-localization.php' ),
-        ], 'config' );
+        $this->publishes([
+            __DIR__.'/config/laravel-localization.php' => config_path('laravel-localization.php'),
+        ], 'config');
 
         /*
          * Routes
          */
-        $this->loadRoutesFrom( __DIR__ . '/routes.php' );
+        $this->loadRoutesFrom(__DIR__.'/routes.php');
 
-        if ( $this->app->runningInConsole() ) {
-            $this->commands( [
+        if ($this->app->runningInConsole()) {
+            $this->commands([
                 ExportMessages::class,
-            ] );
+            ]);
         }
     }
 }
