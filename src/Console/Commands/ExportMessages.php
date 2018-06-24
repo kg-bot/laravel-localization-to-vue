@@ -42,16 +42,19 @@ class ExportMessages extends Command
     {
         $messages = ExportLocalizations::export()->toArray();
 
-        $adapter    = new Local( resource_path( 'assets/js' ) );
+        $filepath = config( 'laravel-localization.js.filepath', resource_path( 'assets/js' ) );
+        $filename = config( 'laravel-localization.js.filename', 'll_messages.js' );
+
+        $adapter    = new Local( $filepath );
         $filesystem = new Filesystem( $adapter );
 
         $contents = 'export default messages = ' . json_encode( $messages );
 
-        $filesystem->write( 'll_messages.js', $contents );
+        $filesystem->write( $filename, $contents );
 
 
-        $this->info( 'Messages exported to JavaScript file, you can find them at ' .
-                     resource_path( 'asets/js/ll_messages.js' ) );
+        $this->info( 'Messages exported to JavaScript file, you can find them at ' . $filepath . DIRECTORY_SEPARATOR
+                     . $filename );
 
         return true;
     }
