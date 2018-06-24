@@ -45,7 +45,7 @@ class ExportMessages extends Command
         $adapter    = new Local( resource_path( 'assets/js' ) );
         $filesystem = new Filesystem( $adapter );
 
-        $contents = 'return ' . json_encode( $messages );
+        $contents = 'export default messages = ' . json_encode( $messages );
 
         $filesystem->write( 'll_messages.js', $contents );
 
