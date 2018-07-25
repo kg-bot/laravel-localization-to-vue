@@ -48,9 +48,17 @@ class ExportMessages extends Command
         $adapter    = new Local( $filepath );
         $filesystem = new Filesystem( $adapter );
 
-        $contents = 'let messages = ' . json_encode( $messages );
+        $contents = 'export default ' . json_encode( $messages );
 
-        $filesystem->write( $filename, $contents );
+        if ( $filesystem->has( $filename ) ) {
+
+            $filesystem->delete( $filename );
+            $filesystem->write( $filename, $contents );
+
+        } else {
+
+            $filesystem->write( $filename, $contents );
+        }
 
         $this->info( 'Messages exported to JavaScript file, you can find them at ' . $filepath . DIRECTORY_SEPARATOR
                      . $filename );
