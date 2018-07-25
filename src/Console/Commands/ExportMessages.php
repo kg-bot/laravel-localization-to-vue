@@ -3,9 +3,9 @@
 namespace KgBot\LaravelLocalization\Console\Commands;
 
 use Illuminate\Console\Command;
-use League\Flysystem\Filesystem;
-use League\Flysystem\Adapter\Local;
 use KgBot\LaravelLocalization\Facades\ExportLocalizations;
+use League\Flysystem\Adapter\Local;
+use League\Flysystem\Filesystem;
 
 class ExportMessages extends Command
 {
@@ -42,18 +42,18 @@ class ExportMessages extends Command
     {
         $messages = ExportLocalizations::export()->toArray();
 
-        $filepath = config('laravel-localization.js.filepath', resource_path('assets/js'));
-        $filename = config('laravel-localization.js.filename', 'll_messages.js');
+        $filepath = config( 'laravel-localization.js.filepath', resource_path( 'assets/js' ) );
+        $filename = config( 'laravel-localization.js.filename', 'll_messages.js' );
 
-        $adapter = new Local($filepath);
-        $filesystem = new Filesystem($adapter);
+        $adapter    = new Local( $filepath );
+        $filesystem = new Filesystem( $adapter );
 
-        $contents = 'export default messages = '.json_encode($messages);
+        $contents = 'let messages = ' . json_encode( $messages );
 
-        $filesystem->write($filename, $contents);
+        $filesystem->write( $filename, $contents );
 
-        $this->info('Messages exported to JavaScript file, you can find them at '.$filepath.DIRECTORY_SEPARATOR
-                     .$filename);
+        $this->info( 'Messages exported to JavaScript file, you can find them at ' . $filepath . DIRECTORY_SEPARATOR
+                     . $filename );
 
         return true;
     }
