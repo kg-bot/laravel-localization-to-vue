@@ -83,7 +83,7 @@ class ExportLocalizations implements \JsonSerializable
 
         // Remove full path from items
         array_walk($phpFiles, function (&$item) {
-            $item = $item->getRelativePathname();
+            $item = DIRECTORY_SEPARATOR.$item->getRelativePathname();
         });
 
         // Fetch non-vendor files from filtered php files
