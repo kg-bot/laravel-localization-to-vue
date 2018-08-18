@@ -26,7 +26,7 @@ class ExportLocalizations implements \JsonSerializable
     /**
      * @var string
      */
-    protected $excludePath = DIRECTORY_SEPARATOR.'vendor'.DIRECTORY_SEPARATOR;
+    protected $excludePath = 'vendor'.DIRECTORY_SEPARATOR;
 
     /**
      * @var string
@@ -79,25 +79,11 @@ class ExportLocalizations implements \JsonSerializable
      */
     protected function findLanguageFiles($path)
     {
-        // Loop through directories
-        $dirIterator = new \RecursiveDirectoryIterator($path, \RecursiveDirectoryIterator::SKIP_DOTS);
-        $recIterator = new \RecursiveIteratorIterator($dirIterator);
-
-        // Fetch only php files - skip others
-        $phpFiles = array_values(
-            array_map('current',
-                iterator_to_array(
-                    new \RegexIterator($recIterator, $this->phpRegex, \RecursiveRegexIterator::GET_MATCH)
-                )
-            )
-        );
-
-        // Sort array by filepath
-        sort($phpFiles);
+         $phpFiles = \File::allFiles($path);
 
         // Remove full path from items
         array_walk($phpFiles, function (&$item) {
-            $item = str_replace(resource_path('lang'), '', $item);
+            $item = $item->getRelativePathname();
         });
 
         // Fetch non-vendor files from filtered php files
