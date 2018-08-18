@@ -79,7 +79,7 @@ class ExportLocalizations implements \JsonSerializable
      */
     protected function findLanguageFiles($path)
     {
-         $phpFiles = \File::allFiles($path);
+        $phpFiles = \File::allFiles($path);
 
         // Remove full path from items
         array_walk($phpFiles, function (&$item) {
