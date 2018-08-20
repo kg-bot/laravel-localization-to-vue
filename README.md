@@ -80,7 +80,7 @@ You can also export messages to ECMAScript 6 standard JavaScript module with art
 ```
 // Inside blade view
 <script>
-    window.default_locale = "{{ config('app.lang') }}";
+    window.default_locale = "{{ config('app.locale') }}";
     window.fallback_locale = "{{ config('app.fallback_locale') }}";
     window.messages = @json($messages);
 </script>
