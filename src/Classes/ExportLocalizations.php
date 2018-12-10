@@ -21,7 +21,7 @@ class ExportLocalizations implements \JsonSerializable
     /**
      * @var string
      */
-    protected $phpRegex = '/^.+\.php|.json$/i';
+    protected $phpRegex = '/^.+\.php$/i';
 
     /**
      * @var string
@@ -98,27 +98,41 @@ class ExportLocalizations implements \JsonSerializable
             )
         );
 
+        $jsonFiles = array_values(
+            array_map( 'current',
+                iterator_to_array(
+                    new \RegexIterator( $recIterator, $this->jsonRegex, \RecursiveRegexIterator::GET_MATCH )
+                )
+            )
+        );
+
+        $files = array_merge( $phpFiles, $jsonFiles );
+
 
         // Sort array by filepath
-        sort( $phpFiles );
+        sort( $files );
 
         // Remove full path from items
-        array_walk( $phpFiles, function ( &$item ) {
+        array_walk( $files, function ( &$item ) {
             $item = str_replace( resource_path( 'lang' ), '', $item );
         } );
 
         // Fetch non-vendor files from filtered php files
-        $nonVendorFiles = array_filter( $phpFiles, function ( $file ) {
-            return strpos( $file, $this->excludePath ) === false;
+        $nonVendorFiles = array_filter( $files, function ( $file ) {
+            return strpos( $file, $this->excludePath ) === false && strpos( $file, '.json' ) === false;
         } );
 
         // Fetch vendor files from filtered php files
-        $vendorFiles = array_diff( $phpFiles, $nonVendorFiles );
+        $vendorFiles = array_filter( array_diff( $files, $nonVendorFiles ), function ( $file ) {
+
+            return strpos( $file, 'json' ) === false;
+        } );
 
         // Fetch .json files from filtered files
-        $jsonFiles = array_filter( $phpFiles, function ( $file ) {
-            return strpos( $file, $this->jsonRegex ) === true;
+        $jsonFiles = array_filter( $files, function ( $file ) {
+            return strpos( $file, '.json' ) !== false;
         } );
+
 
         return [
             'lang'   => array_values( $nonVendorFiles ),
@@ -172,10 +186,19 @@ class ExportLocalizations implements \JsonSerializable
 
                 foreach ( $strings as $json_lang => $json_strings ) {
 
-                    foreach ( $json_strings as $jsLang => $json_messages ) {
+                    $key = $json_lang . $prefix . '__JSON__';
+                    if ( array_key_exists( $key, $results ) ) {
+
+                        $results[ $key ] = $json_strings;
+
+                    } else {
+
+                        $results[ $key ] = $json_strings;
+                    }
+                    /*foreach ( $json_strings as $jsLang => $json_messages ) {
                         $key             = 'json' . $prefix . $json_lang . $prefix . $jsLang;
                         $results[ $key ] = $json_messages;
-                    }
+                    }*/
                 }
             }
         }
@@ -256,12 +279,11 @@ class ExportLocalizations implements \JsonSerializable
     protected function parseJsonFiles( $file )
     {
         // Base package name without file ending
-        $packageName = basename( $file, '.json' );
+        $language = basename( $file, '.json' );
 
         // Get package, language and file contents from language file
         // /<language_code>/(<package/)<filename>.php
-        $language     = explode( DIRECTORY_SEPARATOR, $file )[ 1 ];
-        $fileContents = require resource_path( 'lang' ) . DIRECTORY_SEPARATOR . $file;
+        $fileContents = json_decode( file_get_contents( resource_path( 'lang' ) . $file ) );
 
         // Check if language already exists in array
         if ( array_key_exists( 'json', $this->strings ) ) {
