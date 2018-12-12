@@ -75,6 +75,20 @@ let messages = axios.get('http://localhost/js/lang.js') // This is default route
 You can also export messages to ECMAScript 6 standard JavaScript module with artisan command
 ```` php artisan export:messages ````
 
+## Export for npm localization packages like Lang.js
+If you need special format of array that's recognised by some npm localization packages as [Lang.js](https://github.com/rmariuzzo/Lang.js).
+
+```
+// Call toFlat() instead of toArray()
+ExportLocalization::export()->toFlat()
+
+or
+
+// For CLI usage
+php artisan export:messages-flat
+
+```
+
 ## Some examples why would you use this package and messages over Laravel standard localization
 
 ```
