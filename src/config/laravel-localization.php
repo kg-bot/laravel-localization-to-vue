@@ -63,7 +63,11 @@ return [
          */
         'timeout' => 60,
     ],
-    'js'     => [
+    'js' => [
+        /*
+         * Default locale for export
+         */
+        'default_locale' => 'en',
 
         /*
          * root location to where JavaScript file will be exported

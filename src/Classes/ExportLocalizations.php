@@ -66,11 +66,11 @@ class ExportLocalizations implements \JsonSerializable
         // If timeout > 0 save array to cache
         if (config('laravel-localization.caches.timeout', 0) > 0) {
             Cache::store(config('laravel-localization.caches.driver', 'file'))
-                 ->put(
-                     config('laravel-localization.caches.key', 'localization.array'),
-                     $this->strings,
-                     config('laravel-localization.caches.timeout', 60)
-                 );
+                ->put(
+                    config('laravel-localization.caches.key', 'localization.array'),
+                    $this->strings,
+                    config('laravel-localization.caches.timeout', 60)
+                );
         }
 
         return $this;
@@ -170,6 +170,9 @@ class ExportLocalizations implements \JsonSerializable
     public function toFlat($prefix = '.')
     {
         $results = [];
+        $default_locale = config('laravel-localization.js.default_locale');
+        $default_json_strings = null;
+
         foreach ($this->strings as $lang => $strings) {
             if ($lang !== 'json') {
                 foreach ($strings as $lang_array => $lang_messages) {
@@ -184,8 +187,22 @@ class ExportLocalizations implements \JsonSerializable
                     } else {
                         $results[$key] = $json_strings;
                     }
+
+                    // Pick only the first $json_strings
+                    if (!$default_json_strings)
+                        $default_json_strings = $json_strings;
                 }
             }
+        }
+
+        // Create a JSON key value pair for the default language
+        $default_key = $default_locale . $prefix . '__JSON__';
+        if (!array_key_exists($default_key, $results)) {
+            $buffer = array_keys(
+                get_object_vars($default_json_strings)
+            );
+
+            $results[$default_key] = array_combine($buffer, $buffer);
         }
 
         return $results;
