@@ -189,14 +189,15 @@ class ExportLocalizations implements \JsonSerializable
                     }
 
                     // Pick only the first $json_strings
-                    if (! $default_json_strings)
+                    if (! $default_json_strings) {
                         $default_json_strings = $json_strings;
+                    }
                 }
             }
         }
 
         // Create a JSON key value pair for the default language
-        $default_key = $default_locale.$prefix. '__JSON__';
+        $default_key = $default_locale.$prefix.'__JSON__';
         if (! array_key_exists($default_key, $results)) {
             $buffer = array_keys(
                 get_object_vars($default_json_strings)
