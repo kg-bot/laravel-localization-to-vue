@@ -53,7 +53,7 @@ First example would be to add view composed variable and use it in blade views.
 use ExportLocalization;
 
 // Without alias
-use KgBot\LaravelLocalization\Facades\ExportLocalizations as LaravelLocalization;
+use KgBot\LaravelLocalization\Facades\ExportLocalizations as ExportLocalization;
 
 
 View::composer( 'view.file', function ( $view ) {
