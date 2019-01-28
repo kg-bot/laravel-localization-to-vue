@@ -117,6 +117,20 @@ Vue.prototype.trans = new Lang( { messages, locale: default_locale, fallback: fa
                  :placeholder="trans.get('search.placeholder')"></b-input>
 ``` 
 
+## A note about json files
+
+Laravel 5.4+ allows localization to be strutured [using a single `.json` file for each language](https://laravel.com/docs/5.7/localization#using-translation-strings-as-keys), in order to use the strings inside the provided json file you must preprend the `__JSON__` key
+
+```
+// Assuming that es.json exists and it is the default locale in your app
+{
+   "I love programming": "Me encanta programar"
+}
+
+// Example.vue
+<b-input v-model="query" type="text" :placeholder="trans.get('__JSON__.I love programming')"></b-input>
+```
+
 ## Routing
 
 This package exposes one route `http://localhost/js/lang.js` by default but you can change the prefix to anything you whish in config file.  
