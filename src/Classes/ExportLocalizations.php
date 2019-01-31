@@ -52,13 +52,24 @@ class ExportLocalizations implements \JsonSerializable
             return $this;
         }
 
-        // Collect language files and build array with translations
-        $files = $this->findLanguageFiles( resource_path( 'lang' ) );
+        foreach ( config( 'laravel-localization.paths.lang_dirs' ) as $dir ) {
 
-        // Parse translations and create final array
-        array_walk( $files[ 'lang' ], [ $this, 'parseLangFiles' ] );
-        array_walk( $files[ 'vendor' ], [ $this, 'parseVendorFiles' ] );
-        array_walk( $files[ 'json' ], [ $this, 'parseJsonFiles' ] );
+            try {
+
+                // Collect language files and build array with translations
+                $files = $this->findLanguageFiles( $dir );
+
+                // Parse translations and create final array
+                array_walk( $files[ 'lang' ], [ $this, 'parseLangFiles' ], $dir );
+                array_walk( $files[ 'vendor' ], [ $this, 'parseVendorFiles' ], $dir );
+                array_walk( $files[ 'json' ], [ $this, 'parseJsonFiles' ], $dir );
+
+            } catch ( \Exception $exception ) {
+
+                \Log::critical( 'Can\'t read lang directory ' . $dir . ', error: ' . $exception->getMessage() );
+            }
+
+        }
 
         // Trigger event for final translated array
         event( new LaravelLocalizationExported( $this->strings ) );
@@ -112,8 +123,8 @@ class ExportLocalizations implements \JsonSerializable
         sort( $files );
 
         // Remove full path from items
-        array_walk( $files, function ( &$item ) {
-            $item = str_replace( resource_path( 'lang' ), '', $item );
+        array_walk( $files, function ( &$item ) use ( $path ) {
+            $item = str_replace( $path, '', $item );
         } );
 
         // Fetch non-vendor files from filtered php files
@@ -224,7 +235,7 @@ class ExportLocalizations implements \JsonSerializable
      *
      * @param string $file
      */
-    protected function parseLangFiles( $file )
+    protected function parseLangFiles( $file, $key, $dir )
     {
         // Base package name without file ending
         $packageName = basename( $file, '.php' );
@@ -232,11 +243,21 @@ class ExportLocalizations implements \JsonSerializable
         // Get package, language and file contents from language file
         // /<language_code>/(<package/)<filename>.php
         $language     = explode( DIRECTORY_SEPARATOR, $file )[ 1 ];
-        $fileContents = require resource_path( 'lang' ) . DIRECTORY_SEPARATOR . $file;
+        $fileContents = require $dir . DIRECTORY_SEPARATOR . $file;
 
         // Check if language already exists in array
         if ( array_key_exists( $language, $this->strings ) ) {
-            $this->strings[ $language ][ $packageName ] = $fileContents;
+
+            if ( array_key_exists( $packageName, $this->strings[ $language ] ) ) {
+
+                $this->strings[ $language ][ $packageName ] =
+                    array_replace_recursive( (array) $this->strings[ $language ][ $packageName ], (array)
+                    $fileContents );
+            } else {
+
+                $this->strings[ $language ][ $packageName ] = $fileContents;
+            }
+
         } else {
             $this->strings[ $language ] = [
                 $packageName => $fileContents,
@@ -249,7 +270,7 @@ class ExportLocalizations implements \JsonSerializable
      *
      * @param string $file
      */
-    protected function parseVendorFiles( $file )
+    protected function parseVendorFiles( $file, $key, $dir )
     {
         // Base package name without file ending
         $packageName = basename( $file, '.php' );
@@ -258,14 +279,26 @@ class ExportLocalizations implements \JsonSerializable
         // /vendor/<package>/<language_code>/<filename>.php
         $package      = explode( DIRECTORY_SEPARATOR, $file )[ 2 ];
         $language     = explode( DIRECTORY_SEPARATOR, $file )[ 3 ];
-        $fileContents = require resource_path( 'lang' ) . DIRECTORY_SEPARATOR . $file;
+        $fileContents = require $dir . DIRECTORY_SEPARATOR . $file;
 
         // Check if language already exists in array
         if ( array_key_exists( $language, $this->strings ) ) {
             // Check if package already exists in language
             if ( array_key_exists( $package, $this->strings[ $language ] ) ) {
-                $this->strings[ $language ][ $package ][ $packageName ] = $fileContents;
+
+                if ( array_key_exists( $packageName, $this->strings[ $language ][ $package ] ) ) {
+
+                    $this->strings[ $language ][ $package ][ $packageName ] =
+                        array_replace_recursive( (array) $this->strings[ $language ][ $package ][ $packageName ],
+                            (array)
+                            $fileContents );
+
+                } else {
+
+                    $this->strings[ $language ][ $package ][ $packageName ] = $fileContents;
+                }
             } else {
+
                 $this->strings[ $language ][ $package ] = [ $packageName => $fileContents ];
             }
         } else {
@@ -279,19 +312,26 @@ class ExportLocalizations implements \JsonSerializable
         }
     }
 
-    protected function parseJsonFiles( $file )
+    protected function parseJsonFiles( $file, $key, $dir )
     {
         // Base package name without file ending
         $language = basename( $file, '.json' );
 
         // Get package, language and file contents from language file
         // /<language_code>/(<package/)<filename>.php
-        $fileContents = json_decode( file_get_contents( resource_path( 'lang' ) . $file ) );
+        $fileContents = json_decode( file_get_contents( $dir . $file ) );
 
         // Check if language already exists in array
         if ( array_key_exists( 'json', $this->strings ) ) {
 
-            $this->strings[ 'json' ][ $language ] = $fileContents;
+            if ( array_key_exists( $language, $this->strings[ 'json' ] ) ) {
+
+                $this->strings[ 'json' ][ $language ] =
+                    array_replace_recursive( (array) $this->strings[ 'json' ][ $language ], (array) $fileContents );
+
+            } else {
+                $this->strings[ 'json' ][ $language ] = $fileContents;
+            }
         } else {
             $this->strings[ 'json' ] = [
 
