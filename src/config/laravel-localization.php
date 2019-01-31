@@ -14,12 +14,12 @@ return [
          * Route prefix, example of route http://localhost/js/localizations.js
          *
          */
-        'prefix'     => env( 'LARAVEL_LOCALIZATION_PREFIX', '/js/localization.js' ),
+        'prefix'     => env('LARAVEL_LOCALIZATION_PREFIX', '/js/localization.js'),
 
         /*
          * Route name, defaults to assets.lang
          */
-        'name'       => env( 'LARAVEL_LOCALIZATION_ROUTE_NAME', 'assets.lang' ),
+        'name'       => env('LARAVEL_LOCALIZATION_ROUTE_NAME', 'assets.lang'),
 
         /*
          * Middleware used on localization routes.
@@ -28,14 +28,14 @@ return [
          *
          * Don't use space in .env directive after ,
          */
-        'middleware' => ( env( 'LARAVEL_LOCALIZATION_MIDDLEWARE' ) ) ?
-            explode( ',', env( 'LARAVEL_LOCALIZATION_MIDDLEWARE' ) )
+        'middleware' => (env('LARAVEL_LOCALIZATION_MIDDLEWARE')) ?
+            explode(',', env('LARAVEL_LOCALIZATION_MIDDLEWARE'))
             : [],
 
         /*
          * Should we enable public URL from which we can access translations
          */
-        'enable'     => env( 'LARAVEL_LOCALIZATION_ROUTE_ENABLE', false ),
+        'enable'     => env('LARAVEL_LOCALIZATION_ROUTE_ENABLE', false),
     ],
     'events' => [
 
@@ -44,7 +44,7 @@ return [
          *
          * Here you can change channel on which events will broadcast
          */
-        'channel' => env( 'LARAVEL_LOCALIZATION_EVENTS_CHANNEL', '' ),
+        'channel' => env('LARAVEL_LOCALIZATION_EVENTS_CHANNEL', ''),
     ],
     'caches' => [
 
@@ -72,7 +72,7 @@ return [
         /*
          * root location to where JavaScript file will be exported
          */
-        'filepath'       => resource_path( 'assets/js' ),
+        'filepath'       => resource_path('assets/js'),
 
         /*
          * File name for JavaScript file with exported messages
@@ -81,15 +81,15 @@ return [
     ],
     'paths'  => [
 
-        /**
+        /*
          * You can export more lang files then just files in resources/lang, for example
          *
          * In you .env file just add:
          * LARAVEL_LOCALIZATION_LANG_DIRS=resources/lang,Modules/Blog/Resources/lang
          */
-        'lang_dirs' => ( env( 'LARAVEL_LOCALIZATION_LANG_DIRS' ) ) ?
-            explode( ',', env( 'LARAVEL_LOCALIZATION_LANG_DIRS' ) )
-            : [ 'resources/lang' ],
+        'lang_dirs' => (env('LARAVEL_LOCALIZATION_LANG_DIRS')) ?
+            explode(',', env('LARAVEL_LOCALIZATION_LANG_DIRS'))
+            : ['resources/lang'],
     ],
 
 ];
