@@ -61,7 +61,7 @@ First example would be to add view composed variable and use it in blade views.
 use ExportLocalization;
 
 // Without alias
-use KgBot\LaravelLocalization\Facades\ExportLocalizations as LaravelLocalization;
+use KgBot\LaravelLocalization\Facades\ExportLocalizations as ExportLocalization;
 
 
 View::composer( 'view.file', function ( $view ) {
@@ -124,6 +124,20 @@ Vue.prototype.trans = new Lang( { messages, locale: default_locale, fallback: fa
                  type="text"
                  :placeholder="trans.get('search.placeholder')"></b-input>
 ``` 
+
+## A note about json files
+
+Laravel 5.4+ allows localization to be strutured [using a single `.json` file for each language](https://laravel.com/docs/5.7/localization#using-translation-strings-as-keys), in order to use the strings inside the provided json file you must prepend the `__JSON__` key
+
+```
+// Assuming that es.json exists and it is the default locale in your app
+{
+   "I love programming": "Me encanta programar"
+}
+
+// Example.vue
+<b-input v-model="query" type="text" :placeholder="trans.get('__JSON__.I love programming')"></b-input>
+```
 
 ## Routing
 
