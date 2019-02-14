@@ -40,12 +40,12 @@ You can export config by running
 php artisan vendor:publish --provider=KgBot\LaravelLocalization\LaravelLocalizationServiceProvider --tag=config
 ```
 
-if you want to parse multiple language directories or some other directory except `resources/lang` you can add special 
-`.env` variable `LARAVEL_LOCALIZATION_LANG_DIRS`.
+if you want to parse multiple language directories or some other directory except `resources/lang` you can add multiple 
+paths in config `paths.lang_dirs` inside array.
 
 It can be just one path or multiple paths, for example
 ```
-LARAVEL_LOCALIZATION_LANG_DIRS=resources/lang,app/Modules/Blog/resources/lang,app/Modules/Products/resources/lang
+paths => [resource_path('lang'), app_path('lang'), app_path('Modules/Blog/lang')]
 ```
 
 # Usage

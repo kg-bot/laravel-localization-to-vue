@@ -87,9 +87,7 @@ return [
          * In you .env file just add:
          * LARAVEL_LOCALIZATION_LANG_DIRS=resources/lang,Modules/Blog/Resources/lang
          */
-        'lang_dirs' => ( env( 'LARAVEL_LOCALIZATION_LANG_DIRS' ) ) ?
-            explode( ',', env( 'LARAVEL_LOCALIZATION_LANG_DIRS' ) )
-            : [ 'resources/lang' ],
+        'lang_dirs' => [ resource_path( 'lang' ) ],
     ],
 
 ];
