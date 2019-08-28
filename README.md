@@ -80,6 +80,8 @@ let messages = axios.get('http://localhost/js/lang.js') // This is default route
 </script>
 ```
 
+For this to work, you need to enable the route via `LARAVEL_LOCALIZATION_ROUTE_ENABLE` in your `.env` file or in `config/laravel-localization.php`  
+
 You can also export messages to ECMAScript 6 standard JavaScript module with artisan command
 ```` php artisan export:messages ````
 
