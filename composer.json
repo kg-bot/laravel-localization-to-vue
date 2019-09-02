@@ -2,7 +2,7 @@
   "name": "kg-bot/laravel-localization-to-vue",
   "description": "Laravel package used to collect all localization files from resources/lang directory and sub-directories and make them available as JSON file",
   "require": {
-    "laravel/framework": "5.*"
+    "laravel/framework": "5.*|^6"
   },
   "keywords": [
     "laravel",
