@@ -21,12 +21,12 @@ class ExportLocalizations implements \JsonSerializable
     /**
      * @var string
      */
-    protected $phpRegex = '/^.+\.php$/i';
+    protected $phpRegex;
 
     /**
      * @var string
      */
-    protected $jsonRegex = '/^.+\.json$/i';
+    protected $jsonRegex;
 
     /**
      * @var string
@@ -37,6 +37,18 @@ class ExportLocalizations implements \JsonSerializable
      * @var string
      */
     protected $packageSeparator = '.';
+
+    /**
+     * ExportLocalizations constructor.
+     *
+     * @param string $phpRegex
+     * @param string $jsonRegex
+     */
+    public function __construct($phpRegex, $jsonRegex)
+    {
+        $this->phpRegex = $phpRegex;
+        $this->jsonRegex = $jsonRegex;
+    }
 
     /**
      * Method to return generate array with contents of parsed language files.
