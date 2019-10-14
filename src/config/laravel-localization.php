@@ -89,5 +89,12 @@ return [
          */
         'lang_dirs' => [resource_path('lang')],
     ],
+    /*
+         * You can customize the regexp for lang files to be able to exclude certain files.
+         */
+    'file_regexp'  => [
+        'php' => '/^.+\.php$/i',
+        'json' => '/^.+\.json$/i',
+    ],
 
 ];
