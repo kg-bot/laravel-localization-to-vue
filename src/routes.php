@@ -19,10 +19,8 @@ if (config('laravel-localization.routes.enable')) {
          ->middleware(config('laravel-localization.routes.middleware'));
 }
 
-if(config('laravel-localization.web.enabled')) {
-
-    Route::group(['middleware' => config('laravel-localization.web.middleware'), 'prefix' => config('laravel-localization.web.prefix')], function() {
-
+if (config('laravel-localization.web.enabled')) {
+    Route::group(['middleware' => config('laravel-localization.web.middleware'), 'prefix' => config('laravel-localization.web.prefix')], function () {
         Route::get('', 'KgBot\LaravelLocalization\Http\Controllers\WebController@index')->name('laravel-localization.web');
         Route::get('get-group/{group}', 'KgBot\LaravelLocalization\Http\Controllers\WebController@openGroup')->name('laravel-localization.get-open-group');
         Route::post('select-group', 'KgBot\LaravelLocalization\Http\Controllers\WebController@openGroup')->name('laravel-localization.open-group');

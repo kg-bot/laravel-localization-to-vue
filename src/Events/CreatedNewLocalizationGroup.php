@@ -2,19 +2,16 @@
 
 namespace KgBot\LaravelLocalization\Events;
 
-use Illuminate\Broadcasting\Channel;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Broadcasting\PrivateChannel;
-use Illuminate\Broadcasting\PresenceChannel;
 use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Broadcasting\InteractsWithSockets;
-use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
 
 class CreatedNewLocalizationGroup
 {
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
-    /** @var string  */
+    /** @var string */
     public $group_name;
 
     /**

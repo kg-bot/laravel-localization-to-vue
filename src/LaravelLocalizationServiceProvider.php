@@ -8,7 +8,6 @@
 
 namespace KgBot\LaravelLocalization;
 
-use Illuminate\Filesystem\Filesystem;
 use Illuminate\Support\ServiceProvider;
 use KgBot\LaravelLocalization\Classes\ExportLocalizations;
 use KgBot\LaravelLocalization\Console\Commands\ExportMessages;
