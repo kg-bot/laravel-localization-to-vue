@@ -8,15 +8,14 @@
 
 namespace KgBot\LaravelLocalization\Classes;
 
-use Illuminate\Support\Arr;
+use Illuminate\Filesystem\Filesystem;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Config;
 use KgBot\LaravelLocalization\Events\CreatedNewLocaleKey;
-use KgBot\LaravelLocalization\Events\CreatedNewLocalizationGroup;
-use KgBot\LaravelLocalization\Events\CreatedNewLocalizationKey;
 use KgBot\LaravelLocalization\Events\DeletedLocalizationKey;
+use KgBot\LaravelLocalization\Events\CreatedNewLocalizationKey;
+use KgBot\LaravelLocalization\Events\CreatedNewLocalizationGroup;
 use KgBot\LaravelLocalization\Events\LaravelLocalizationExported;
-use Illuminate\Filesystem\Filesystem;
 
 class ExportLocalizations implements \JsonSerializable
 {
@@ -313,7 +312,7 @@ class ExportLocalizations implements \JsonSerializable
     }
 
     /**
-     * Parse json (files that match $this->jsonRegex regex) files
+     * Parse json (files that match $this->jsonRegex regex) files.
      *
      * @param $file
      * @param $key
@@ -345,7 +344,7 @@ class ExportLocalizations implements \JsonSerializable
     }
 
     /**
-     * Get all locales
+     * Get all locales.
      *
      * @param null $dir
      * @param array $exclude
@@ -353,21 +352,21 @@ class ExportLocalizations implements \JsonSerializable
      */
     public function getLocales($dir = null, array $exclude = ['.', '..', 'vendor'])
     {
-       $locales = [];
-       $dir = $dir ?? resource_path('lang');
+        $locales = [];
+        $dir = $dir ?? resource_path('lang');
 
-        foreach ( $this->files->directories( $dir ) as $localeDir ) {
-            if ( !in_array( ($name = $this->files->name( $localeDir ) ), $exclude) ) {
+        foreach ($this->files->directories($dir) as $localeDir) {
+            if (! in_array(($name = $this->files->name($localeDir)), $exclude)) {
                 $locales[] = $name;
             }
         }
-        sort( $locales );
+        sort($locales);
 
         return $locales;
     }
 
     /**
-     * Get all localization groups without any content
+     * Get all localization groups without any content.
      *
      * @return array
      */
@@ -376,14 +375,12 @@ class ExportLocalizations implements \JsonSerializable
         $locales = $this->export()->toArray();
         $data = [];
 
-        foreach($locales as $lang => $groups) {
-
-            if($lang !== 'json') {
+        foreach ($locales as $lang => $groups) {
+            if ($lang !== 'json') {
                 foreach ($groups as $group => $keys) {
                     $data[] = $group;
                 }
             } else {
-
                 $data[] = '__JSON__';
             }
         }
@@ -392,7 +389,7 @@ class ExportLocalizations implements \JsonSerializable
     }
 
     /**
-     * Return specified localization group with full content in array dot notation
+     * Return specified localization group with full content in array dot notation.
      *
      * @param $group
      * @return array
@@ -402,22 +399,17 @@ class ExportLocalizations implements \JsonSerializable
         $translations = $this->export()->toArray();
         $data = [];
 
-        if($group === '__JSON__') {
-
+        if ($group === '__JSON__') {
             $group = 'json';
-            if(isset($translations[$group])) {
-
-                foreach($translations[$group] as $locale => $translations) {
-
-                    if(is_array($translations)) {
+            if (isset($translations[$group])) {
+                foreach ($translations[$group] as $locale => $translations) {
+                    if (is_array($translations)) {
                         foreach ($translations as $key => $value) {
 
                             //$key = (is_array($value)) ? \Arr::dot($value) : $key;
                             if (isset($data[$key])) {
-
                                 $data[$key][$locale] = $value;
                             } else {
-
                                 $data[$key] = [
 
                                     $locale => $value,
@@ -428,18 +420,14 @@ class ExportLocalizations implements \JsonSerializable
                 }
             }
         } else {
-
-            foreach($translations as $locale => $translation) {
-                if(isset($translation[$group])) {
-
-                    foreach($translation[$group] as $key => $value) {
+            foreach ($translations as $locale => $translation) {
+                if (isset($translation[$group])) {
+                    foreach ($translation[$group] as $key => $value) {
 
                         //$key = (is_array($value)) ? \Arr::dot($value) : $key;
-                        if(isset($data[$key])) {
-
+                        if (isset($data[$key])) {
                             $data[$key][$locale] = \Arr::dot($translation[$group]);
                         } else {
-
                             $data[$key] = [
 
                                 $locale => \Arr::dot($translation[$group]),
@@ -454,7 +442,7 @@ class ExportLocalizations implements \JsonSerializable
     }
 
     /**
-     * Save new translation to localization group and key
+     * Save new translation to localization group and key.
      *
      * @param $group_name
      * @param $key
@@ -468,40 +456,33 @@ class ExportLocalizations implements \JsonSerializable
         $groups = $this->getGroups();
         $translations = $this->export()->toArray();
 
-        if(in_array($group_name, array_values($groups))) {
-
-            if($group_name === '__JSON__') {
-
+        if (in_array($group_name, array_values($groups))) {
+            if ($group_name === '__JSON__') {
                 $group_name = 'json';
-                if(!isset($translations[$group_name][$locale])) {
-
+                if (! isset($translations[$group_name][$locale])) {
                     $translations[$group_name] = [
 
                         $locale => [
 
                             $key => $value,
-                        ]
+                        ],
                     ];
                 } else {
-
                     $translations[$group_name][$locale][$key] = $value;
                 }
 
                 $content = $translations[$group_name][$locale];
                 $isJson = true;
             } else {
-
-                if(!isset($translations[$locale][$group_name])) {
-
+                if (! isset($translations[$locale][$group_name])) {
                     $translations[$locale] = [
 
                         $group_name => [
 
                             $key => $value,
-                        ]
+                        ],
                     ];
                 } else {
-
                     $translations[$locale][$group_name][$key] = $value;
                 }
 
@@ -517,7 +498,7 @@ class ExportLocalizations implements \JsonSerializable
     }
 
     /**
-     * Handle writing localization group to file(s)
+     * Handle writing localization group to file(s).
      *
      * @param $content
      * @param $locale
@@ -527,13 +508,12 @@ class ExportLocalizations implements \JsonSerializable
      */
     protected function writeGroup($content, $locale, $group_name, $isJson = false)
     {
-        $output = $isJson === false ? "<?php\n\nreturn " . var_export( $content, true ) . ";" . \PHP_EOL : json_encode($content).\PHP_EOL;
+        $output = $isJson === false ? "<?php\n\nreturn ".var_export($content, true).';'.\PHP_EOL : json_encode($content).\PHP_EOL;
 
-        foreach(Config::get('laravel-localization.paths.lang_dirs') as $dir) {
+        foreach (Config::get('laravel-localization.paths.lang_dirs') as $dir) {
+            $path = rtrim($dir)."/{$locale}".($isJson === false ? "/{$group_name}.php" : '.json');
 
-            $path = rtrim($dir)."/{$locale}" . ($isJson === false ? "/{$group_name}.php" : '.json');
-
-            if(!$this->files->exists(dirname($path))) {
+            if (! $this->files->exists(dirname($path))) {
                 $this->files->makeDirectory(dirname($path), 0777, true);
             }
             $this->files->put($path, $output);
@@ -543,7 +523,7 @@ class ExportLocalizations implements \JsonSerializable
     }
 
     /**
-     * Save new key(s) in translation group file
+     * Save new key(s) in translation group file.
      *
      * @param $group_name
      * @param $keys
@@ -554,22 +534,19 @@ class ExportLocalizations implements \JsonSerializable
     {
         $languages = $this->getLocales();
 
-        foreach($languages as $language) {
+        foreach ($languages as $language) {
             $translations = $this->export()->toArray();
 
-            if($group_name === '__JSON__') {
-
+            if ($group_name === '__JSON__') {
                 $group_name = 'json';
-                if(!isset($translations[$group_name][$language])) {
-
+                if (! isset($translations[$group_name][$language])) {
                     $translations[$group_name] = [
 
                         $language => [],
                     ];
                 }
 
-                foreach($keys as $key) {
-
+                foreach ($keys as $key) {
                     $key = trim($key);
                     $translations[$group_name][$language][$key] = '';
                 }
@@ -577,17 +554,14 @@ class ExportLocalizations implements \JsonSerializable
                 $content = $translations[$group_name][$language];
                 $isJson = true;
             } else {
-
-                if(!isset($translations[$language][$group_name])) {
-
+                if (! isset($translations[$language][$group_name])) {
                     $translations[$language] = [
 
-                        $group_name => []
+                        $group_name => [],
                     ];
                 }
 
-                foreach($keys as $key) {
-
+                foreach ($keys as $key) {
                     $key = trim($key);
                     $translations[$language][$group_name][$key] = '';
                 }
@@ -595,7 +569,7 @@ class ExportLocalizations implements \JsonSerializable
                 $content = $translations[$language][$group_name];
             }
 
-             $this->writeGroup($content, $language, $group_name, $isJson ?? false);
+            $this->writeGroup($content, $language, $group_name, $isJson ?? false);
             $this->clearCache();
         }
 
@@ -605,7 +579,7 @@ class ExportLocalizations implements \JsonSerializable
     }
 
     /**
-     * Create new translation group
+     * Create new translation group.
      *
      * @param $group_name
      * @return bool
@@ -615,8 +589,7 @@ class ExportLocalizations implements \JsonSerializable
     {
         $languages = $this->getLocales();
 
-        foreach($languages as $language) {
-
+        foreach ($languages as $language) {
             $this->writeGroup([], $language, $group_name);
         }
 
@@ -628,7 +601,7 @@ class ExportLocalizations implements \JsonSerializable
     }
 
     /**
-     * Create new locale
+     * Create new locale.
      *
      * @param string $locale
      * @return bool
@@ -636,11 +609,10 @@ class ExportLocalizations implements \JsonSerializable
      */
     public function createNewLocale($locale)
     {
-        foreach(Config::get('laravel-localization.paths.lang_dirs') as $dir) {
-
+        foreach (Config::get('laravel-localization.paths.lang_dirs') as $dir) {
             $locale = explode('/', $locale)[0];
             $path = rtrim($dir).'/'.$locale;
-            if(!$this->files->exists($path)) {
+            if (! $this->files->exists($path)) {
                 $this->files->makeDirectory($path, 0777, true);
                 $this->files->put($path.'.json', json_encode([], JSON_FORCE_OBJECT).\PHP_EOL);
             }
@@ -654,7 +626,7 @@ class ExportLocalizations implements \JsonSerializable
     }
 
     /**
-     * Delete existing locale
+     * Delete existing locale.
      *
      * @param array $locales
      * @return bool
@@ -662,10 +634,8 @@ class ExportLocalizations implements \JsonSerializable
      */
     public function deleteLocales($locales)
     {
-        foreach($locales as $locale => $value) {
-
+        foreach ($locales as $locale => $value) {
             foreach (Config::get('laravel-localization.paths.lang_dirs') as $dir) {
-
                 $locale = explode('/', $locale)[0];
                 $path = rtrim($dir).'/'.$locale;
                 $this->files->deleteDirectory($path);
@@ -676,11 +646,12 @@ class ExportLocalizations implements \JsonSerializable
         }
 
         $this->clearCache();
+
         return true;
     }
 
     /**
-     * Clear laravel-localization cache if it is enabled
+     * Clear laravel-localization cache if it is enabled.
      *
      * @throws \Psr\SimpleCache\InvalidArgumentException
      */
@@ -688,8 +659,7 @@ class ExportLocalizations implements \JsonSerializable
     {
         if (config('laravel-localization.caches.timeout', 0) > 0) {
             $store = Cache::store(config('laravel-localization.caches.driver', 'file'));
-            if($store->has(config('laravel-localization.caches.key'))) {
-
+            if ($store->has(config('laravel-localization.caches.key'))) {
                 $store->forget(config('laravel-localization.caches.key'));
             }
         }
