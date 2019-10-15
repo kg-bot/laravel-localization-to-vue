@@ -8,46 +8,48 @@
 
 namespace KgBot\LaravelLocalization\Classes;
 
+use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Config;
+use KgBot\LaravelLocalization\Events\CreatedNewLocaleKey;
+use KgBot\LaravelLocalization\Events\CreatedNewLocalizationGroup;
+use KgBot\LaravelLocalization\Events\CreatedNewLocalizationKey;
+use KgBot\LaravelLocalization\Events\DeletedLocalizationKey;
 use KgBot\LaravelLocalization\Events\LaravelLocalizationExported;
+use Illuminate\Filesystem\Filesystem;
 
 class ExportLocalizations implements \JsonSerializable
 {
-    /**
-     * @var array
-     */
+    /** @var array */
     protected $strings = [];
 
-    /**
-     * @var string
-     */
+    /** @var string */
     protected $phpRegex;
 
-    /**
-     * @var string
-     */
+    /** @var string */
     protected $jsonRegex;
 
-    /**
-     * @var string
-     */
+    /** @var string */
     protected $excludePath = DIRECTORY_SEPARATOR.'vendor'.DIRECTORY_SEPARATOR;
 
-    /**
-     * @var string
-     */
+    /** @var string */
     protected $packageSeparator = '.';
+
+    /** @var Filesystem */
+    protected $files;
 
     /**
      * ExportLocalizations constructor.
      *
      * @param string $phpRegex
      * @param string $jsonRegex
+     * @param Filesystem $filesystem
      */
     public function __construct($phpRegex, $jsonRegex)
     {
         $this->phpRegex = $phpRegex;
         $this->jsonRegex = $jsonRegex;
+        $this->files = new Filesystem();
     }
 
     /**
@@ -181,7 +183,6 @@ class ExportLocalizations implements \JsonSerializable
      * If you need special format of array that's recognised by some npm localization packages as Lang.js
      * https://github.com/rmariuzzo/Lang.js use this method.
      *
-     * @param array  $array
      * @param string $prefix
      *
      * @return array
@@ -311,6 +312,13 @@ class ExportLocalizations implements \JsonSerializable
         }
     }
 
+    /**
+     * Parse json (files that match $this->jsonRegex regex) files
+     *
+     * @param $file
+     * @param $key
+     * @param $dir
+     */
     protected function parseJsonFiles($file, $key, $dir)
     {
         // Base package name without file ending
@@ -333,6 +341,357 @@ class ExportLocalizations implements \JsonSerializable
 
                 $language => $fileContents,
             ];
+        }
+    }
+
+    /**
+     * Get all locales
+     *
+     * @param null $dir
+     * @param array $exclude
+     * @return array
+     */
+    public function getLocales($dir = null, array $exclude = ['.', '..', 'vendor'])
+    {
+       $locales = [];
+       $dir = $dir ?? resource_path('lang');
+
+        foreach ( $this->files->directories( $dir ) as $localeDir ) {
+            if ( !in_array( ($name = $this->files->name( $localeDir ) ), $exclude) ) {
+                $locales[] = $name;
+            }
+        }
+        sort( $locales );
+
+        return $locales;
+    }
+
+    /**
+     * Get all localization groups without any content
+     *
+     * @return array
+     */
+    public function getGroups()
+    {
+        $locales = $this->export()->toArray();
+        $data = [];
+
+        foreach($locales as $lang => $groups) {
+
+            if($lang !== 'json') {
+                foreach ($groups as $group => $keys) {
+                    $data[] = $group;
+                }
+            } else {
+
+                $data[] = '__JSON__';
+            }
+        }
+
+        return array_unique($data);
+    }
+
+    /**
+     * Return specified localization group with full content in array dot notation
+     *
+     * @param $group
+     * @return array
+     */
+    public function getGroup($group)
+    {
+        $translations = $this->export()->toArray();
+        $data = [];
+
+        if($group === '__JSON__') {
+
+            $group = 'json';
+            if(isset($translations[$group])) {
+
+                foreach($translations[$group] as $locale => $translations) {
+
+                    if(is_array($translations)) {
+                        foreach ($translations as $key => $value) {
+
+                            //$key = (is_array($value)) ? \Arr::dot($value) : $key;
+                            if (isset($data[$key])) {
+
+                                $data[$key][$locale] = $value;
+                            } else {
+
+                                $data[$key] = [
+
+                                    $locale => $value,
+                                ];
+                            }
+                        }
+                    }
+                }
+            }
+        } else {
+
+            foreach($translations as $locale => $translation) {
+                if(isset($translation[$group])) {
+
+                    foreach($translation[$group] as $key => $value) {
+
+                        //$key = (is_array($value)) ? \Arr::dot($value) : $key;
+                        if(isset($data[$key])) {
+
+                            $data[$key][$locale] = \Arr::dot($translation[$group]);
+                        } else {
+
+                            $data[$key] = [
+
+                                $locale => \Arr::dot($translation[$group]),
+                            ];
+                        }
+                    }
+                }
+            }
+        }
+
+        return $data;
+    }
+
+    /**
+     * Save new translation to localization group and key
+     *
+     * @param $group_name
+     * @param $key
+     * @param $locale
+     * @param $value
+     * @return bool
+     * @throws \Psr\SimpleCache\InvalidArgumentException
+     */
+    public function writeValue($group_name, $key, $locale, $value)
+    {
+        $groups = $this->getGroups();
+        $translations = $this->export()->toArray();
+
+        if(in_array($group_name, array_values($groups))) {
+
+            if($group_name === '__JSON__') {
+
+                $group_name = 'json';
+                if(!isset($translations[$group_name][$locale])) {
+
+                    $translations[$group_name] = [
+
+                        $locale => [
+
+                            $key => $value,
+                        ]
+                    ];
+                } else {
+
+                    $translations[$group_name][$locale][$key] = $value;
+                }
+
+                $content = $translations[$group_name][$locale];
+                $isJson = true;
+            } else {
+
+                if(!isset($translations[$locale][$group_name])) {
+
+                    $translations[$locale] = [
+
+                        $group_name => [
+
+                            $key => $value,
+                        ]
+                    ];
+                } else {
+
+                    $translations[$locale][$group_name][$key] = $value;
+                }
+
+                $content = $translations[$locale][$group_name];
+            }
+
+            $this->writeGroup($content, $locale, $group_name, $isJson ?? false);
+
+            $this->clearCache();
+
+            return true;
+        }
+    }
+
+    /**
+     * Handle writing localization group to file(s)
+     *
+     * @param $content
+     * @param $locale
+     * @param $group_name
+     * @param bool $isJson
+     * @throws \Psr\SimpleCache\InvalidArgumentException
+     */
+    protected function writeGroup($content, $locale, $group_name, $isJson = false)
+    {
+        $output = $isJson === false ? "<?php\n\nreturn " . var_export( $content, true ) . ";" . \PHP_EOL : json_encode($content).\PHP_EOL;
+
+        foreach(Config::get('laravel-localization.paths.lang_dirs') as $dir) {
+
+            $path = rtrim($dir)."/{$locale}" . ($isJson === false ? "/{$group_name}.php" : '.json');
+
+            if(!$this->files->exists(dirname($path))) {
+                $this->files->makeDirectory(dirname($path), 0777, true);
+            }
+            $this->files->put($path, $output);
+        }
+
+        $this->clearCache();
+    }
+
+    /**
+     * Save new key(s) in translation group file
+     *
+     * @param $group_name
+     * @param $keys
+     * @return bool
+     * @throws \Psr\SimpleCache\InvalidArgumentException
+     */
+    public function writeKeys($group_name, $keys)
+    {
+        $languages = $this->getLocales();
+
+        foreach($languages as $language) {
+            $translations = $this->export()->toArray();
+
+            if($group_name === '__JSON__') {
+
+                $group_name = 'json';
+                if(!isset($translations[$group_name][$language])) {
+
+                    $translations[$group_name] = [
+
+                        $language => [],
+                    ];
+                }
+
+                foreach($keys as $key) {
+
+                    $key = trim($key);
+                    $translations[$group_name][$language][$key] = '';
+                }
+
+                $content = $translations[$group_name][$language];
+                $isJson = true;
+            } else {
+
+                if(!isset($translations[$language][$group_name])) {
+
+                    $translations[$language] = [
+
+                        $group_name => []
+                    ];
+                }
+
+                foreach($keys as $key) {
+
+                    $key = trim($key);
+                    $translations[$language][$group_name][$key] = '';
+                }
+
+                $content = $translations[$language][$group_name];
+            }
+
+             $this->writeGroup($content, $language, $group_name, $isJson ?? false);
+            $this->clearCache();
+        }
+
+        event(new CreatedNewLocalizationKey($group_name, $keys));
+
+        return true;
+    }
+
+    /**
+     * Create new translation group
+     *
+     * @param $group_name
+     * @return bool
+     * @throws \Psr\SimpleCache\InvalidArgumentException
+     */
+    public function createNewGroup($group_name)
+    {
+        $languages = $this->getLocales();
+
+        foreach($languages as $language) {
+
+            $this->writeGroup([], $language, $group_name);
+        }
+
+        event(new CreatedNewLocalizationGroup($group_name));
+
+        $this->clearCache();
+
+        return true;
+    }
+
+    /**
+     * Create new locale
+     *
+     * @param string $locale
+     * @return bool
+     * @throws \Psr\SimpleCache\InvalidArgumentException
+     */
+    public function createNewLocale($locale)
+    {
+        foreach(Config::get('laravel-localization.paths.lang_dirs') as $dir) {
+
+            $locale = explode('/', $locale)[0];
+            $path = rtrim($dir).'/'.$locale;
+            if(!$this->files->exists($path)) {
+                $this->files->makeDirectory($path, 0777, true);
+                $this->files->put($path.'.json', json_encode([], JSON_FORCE_OBJECT).\PHP_EOL);
+            }
+        }
+
+        event(new CreatedNewLocaleKey($locale));
+
+        $this->clearCache();
+
+        return true;
+    }
+
+    /**
+     * Delete existing locale
+     *
+     * @param array $locales
+     * @return bool
+     * @throws \Psr\SimpleCache\InvalidArgumentException
+     */
+    public function deleteLocales($locales)
+    {
+        foreach($locales as $locale => $value) {
+
+            foreach (Config::get('laravel-localization.paths.lang_dirs') as $dir) {
+
+                $locale = explode('/', $locale)[0];
+                $path = rtrim($dir).'/'.$locale;
+                $this->files->deleteDirectory($path);
+                $this->files->delete([$path.'.json']);
+            }
+
+            event(new DeletedLocalizationKey($locale));
+        }
+
+        $this->clearCache();
+        return true;
+    }
+
+    /**
+     * Clear laravel-localization cache if it is enabled
+     *
+     * @throws \Psr\SimpleCache\InvalidArgumentException
+     */
+    public function clearCache()
+    {
+        if (config('laravel-localization.caches.timeout', 0) > 0) {
+            $store = Cache::store(config('laravel-localization.caches.driver', 'file'));
+            if($store->has(config('laravel-localization.caches.key'))) {
+
+                $store->forget(config('laravel-localization.caches.key'));
+            }
         }
     }
 }

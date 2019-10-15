@@ -8,6 +8,7 @@
 
 namespace KgBot\LaravelLocalization;
 
+use Illuminate\Filesystem\Filesystem;
 use Illuminate\Support\ServiceProvider;
 use KgBot\LaravelLocalization\Classes\ExportLocalizations;
 use KgBot\LaravelLocalization\Console\Commands\ExportMessages;
@@ -39,6 +40,14 @@ class LaravelLocalizationServiceProvider extends ServiceProvider
          * Routes
          */
         $this->loadRoutesFrom(__DIR__.'/routes.php');
+
+        $this->loadViewsFrom(__DIR__.'/resources/views', 'laravel-localization');
+
+        $this->loadTranslationsFrom(__DIR__.'/resources/lang', 'laravel-localization');
+
+        $this->publishes([
+            __DIR__.'/resources/assets' => public_path('vendor/laravel-localization'),
+        ], 'public');
 
         if ($this->app->runningInConsole()) {
             $this->commands([

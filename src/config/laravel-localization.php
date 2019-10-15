@@ -96,5 +96,15 @@ return [
         'php' => '/^.+\.php$/i',
         'json' => '/^.+\.json$/i',
     ],
+    'web' => [
+
+        'enabled' => env('LARAVEL_LOCALIZATION_WEB_ENABLED', true),
+
+        'middleware' => (env('LARAVEL_LOCALIZATION_WEB_MIDDLEWARE')) ?
+            explode(',', env('LARAVEL_LOCALIZATION_WEB_MIDDLEWARE'))
+            : [],
+
+        'prefix' => env('LARAVEL_LOCALIZATION_WEB_PREFIX', 'laravel-localization'),
+    ],
 
 ];
