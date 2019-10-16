@@ -23,12 +23,12 @@ composer require kg-bot/laravel-localization-to-vue
 Laravel 5.5 uses Package Auto-Discovery, so doesn't require you to manually add the ServiceProvider.
 
 If you don't use auto-discovery, add the ServiceProvider to the providers array in config/app.php
-``` 
+```php
 KgBot\LaravelLocalization\LaravelLocalizationServiceProvider::class
 ```
 
 and if you want alias add this inside aliases array in config/app.php
-```
+```php
 "ExportLocalization" => "KgBot\\LaravelLocalization\\Facades\\ExportLocalizations"
 ```
 
@@ -36,7 +36,7 @@ and if you want alias add this inside aliases array in config/app.php
 
 You can export config by running 
 
-```
+```php
 php artisan vendor:publish --provider=KgBot\LaravelLocalization\LaravelLocalizationServiceProvider --tag=config
 ```
 
@@ -44,7 +44,7 @@ if you want to parse multiple language directories or some other directory excep
 paths in config `paths.lang_dirs` inside array.
 
 It can be just one path or multiple paths, for example
-```
+```php
 paths => [resource_path('lang'), app_path('lang'), app_path('Modules/Blog/lang')]
 ```
 
@@ -54,7 +54,7 @@ This package can be used in multiple ways, I'll give examples for some of them, 
 
 First example would be to add view composed variable and use it in blade views.
 
-```
+```php
 // inside ServiceProvider
 
 // With alias
@@ -74,7 +74,7 @@ View::composer( 'view.file', function ( $view ) {
 
 Second way would be to request it over HTTP just like any other file
 
-```
+```html
 <script>
 let messages = axios.get('http://localhost/js/lang.js') // This is default route which can be changed in config
 </script>
@@ -88,7 +88,7 @@ You can also export messages to ECMAScript 6 standard JavaScript module with art
 ## Export for npm localization packages like Lang.js
 If you need special format of array that's recognised by some npm localization packages as [Lang.js](https://github.com/rmariuzzo/Lang.js).
 
-```
+```php
 // Call toFlat() instead of toArray()
 ExportLocalization::export()->toFlat()
 
@@ -101,14 +101,16 @@ php artisan export:messages-flat
 
 ## Some examples why would you use this package and messages over Laravel standard localization
 
-```
+```html
 // Inside blade view
 <script>
     window.default_locale = "{{ config('app.locale') }}";
     window.fallback_locale = "{{ config('app.fallback_locale') }}";
     window.messages = @json($messages);
 </script>
+```
 
+```js
 // And optionaly you can then use it in any JavaScript file or Vue.js component
 
 // app.js
@@ -120,23 +122,28 @@ const fallback_locale = window.fallback_locale;
 const messages = window.messages;
 
 Vue.prototype.trans = new Lang( { messages, locale: default_locale, fallback: fallback_locale } );
+```
 
+```html
 // Example.vue
 <b-input v-model="query"
-                 type="text"
-                 :placeholder="trans.get('search.placeholder')"></b-input>
+    type="text"
+    :placeholder="trans.get('search.placeholder')"
+></b-input>
 ``` 
 
 ## A note about json files
 
 Laravel 5.4+ allows localization to be strutured [using a single `.json` file for each language](https://laravel.com/docs/5.7/localization#using-translation-strings-as-keys), in order to use the strings inside the provided json file you must prepend the `__JSON__` key
 
-```
+```json
 // Assuming that es.json exists and it is the default locale in your app
 {
    "I love programming": "Me encanta programar"
 }
+```
 
+```html
 // Example.vue
 <b-input v-model="query" type="text" :placeholder="trans.get('__JSON__.I love programming')"></b-input>
 ```
