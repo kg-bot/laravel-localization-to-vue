@@ -44,7 +44,7 @@ class ExportLocalizations implements \JsonSerializable
      * @param string $phpRegex
      * @param string $jsonRegex
      */
-    public function __construct($phpRegex, $jsonRegex)
+    public function __construct($phpRegex = '/^.+\.php$/i', $jsonRegex = '/^.+\.json$/i')
     {
         $this->phpRegex = $phpRegex;
         $this->jsonRegex = $jsonRegex;
