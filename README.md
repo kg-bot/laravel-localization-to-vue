@@ -37,7 +37,7 @@ and if you want alias add this inside aliases array in config/app.php
 You can export config by running 
 
 ```php
-php artisan vendor:publish --provider=KgBot\LaravelLocalization\LaravelLocalizationServiceProvider --tag=config
+php artisan vendor:publish --provider="KgBot\LaravelLocalization\LaravelLocalizationServiceProvider" --tag=config
 ```
 
 if you want to parse multiple language directories or some other directory except `resources/lang` you can add multiple 
