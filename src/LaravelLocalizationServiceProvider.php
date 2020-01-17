@@ -18,8 +18,8 @@ class LaravelLocalizationServiceProvider extends ServiceProvider
     public function boot()
     {
         $this->app->bind('export-localization', function () {
-            $phpRegex = config('laravel-localization.file_regexp.php');
-            $jsonRegex = config('laravel-localization.file_regexp.json');
+            $phpRegex = config('laravel-localization.file_regexp.php', '/^.+\.php$/i');
+            $jsonRegex = config('laravel-localization.file_regexp.json', '/^.+\.json$/i');
 
             return new ExportLocalizations($phpRegex, $jsonRegex);
         });
