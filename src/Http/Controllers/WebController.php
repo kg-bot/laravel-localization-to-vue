@@ -3,8 +3,8 @@
 namespace KgBot\LaravelLocalization\Http\Controllers;
 
 use Illuminate\Http\Request;
-use KgBot\LaravelLocalization\Rules\LocaleAlreadyExist;
 use KgBot\LaravelLocalization\Facades\ExportLocalizations;
+use KgBot\LaravelLocalization\Rules\LocaleAlreadyExist;
 
 class WebController extends Controller
 {

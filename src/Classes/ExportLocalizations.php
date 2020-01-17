@@ -12,9 +12,9 @@ use Illuminate\Filesystem\Filesystem;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Config;
 use KgBot\LaravelLocalization\Events\CreatedNewLocaleKey;
-use KgBot\LaravelLocalization\Events\DeletedLocalizationKey;
-use KgBot\LaravelLocalization\Events\CreatedNewLocalizationKey;
 use KgBot\LaravelLocalization\Events\CreatedNewLocalizationGroup;
+use KgBot\LaravelLocalization\Events\CreatedNewLocalizationKey;
+use KgBot\LaravelLocalization\Events\DeletedLocalizationKey;
 use KgBot\LaravelLocalization\Events\LaravelLocalizationExported;
 
 class ExportLocalizations implements \JsonSerializable

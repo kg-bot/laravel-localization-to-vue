@@ -2,8 +2,8 @@
 
 namespace KgBot\LaravelLocalization\Rules;
 
-use Illuminate\Filesystem\Filesystem;
 use Illuminate\Contracts\Validation\Rule;
+use Illuminate\Filesystem\Filesystem;
 use KgBot\LaravelLocalization\Facades\ExportLocalizations;
 
 class LocaleAlreadyExist implements Rule
