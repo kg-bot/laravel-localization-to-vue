@@ -1,17 +1,13 @@
 <?php
 
-
 namespace KgBot\LaravelLocalization\Http\Controllers;
 
-
 use Illuminate\Http\Request;
-use KgBot\LaravelLocalization\Facades\ExportLocalizations;
 use KgBot\LaravelLocalization\Rules\LocaleAlreadyExist;
-use Illuminate\Filesystem\Filesystem;
+use KgBot\LaravelLocalization\Facades\ExportLocalizations;
 
 class WebController extends Controller
 {
-
     /**
      * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
      */
@@ -19,7 +15,6 @@ class WebController extends Controller
     {
         $languages = ExportLocalizations::getLocales();
         $groups = ExportLocalizations::getGroups();
-
 
         return view('laravel-localization::index', compact('languages', 'groups'));
     }
@@ -36,8 +31,8 @@ class WebController extends Controller
             'locale' => [
 
                 'string',
-                new LocaleAlreadyExist()
-            ]
+                new LocaleAlreadyExist(),
+            ],
         ]);
 
         ExportLocalizations::createNewLocale($request->get('locale'));
@@ -53,21 +48,21 @@ class WebController extends Controller
     {
         ExportLocalizations::deleteLocales($request->input('remove-locale'));
 
-        return back()->with('success', __('Locale deleted') . '!');
+        return back()->with('success', __('Locale deleted').'!');
     }
 
     public function openGroup($group)
     {
         $groups = ExportLocalizations::getGroups();
 
-        if(in_array($group, array_values($groups))) {
+        if (in_array($group, array_values($groups))) {
             $languages = ExportLocalizations::getLocales();
 
             return view('laravel-localization::group', [
                 'group_name' => $group,
                 'languages' => array_values($languages),
                 'group' => ExportLocalizations::getGroup($group),
-                'groups' => $groups
+                'groups' => $groups,
             ]);
         }
 
@@ -88,16 +83,13 @@ class WebController extends Controller
     {
         $groups = ExportLocalizations::getGroups();
 
-        if(in_array($request->get('group'), array_values($groups))) {
-
+        if (in_array($request->get('group'), array_values($groups))) {
             $group_name = $request->get('group');
             $keys = explode("\n", $request->get('keys'));
 
             ExportLocalizations::writeKeys($group_name, $keys);
 
             return redirect()->route('laravel-localization.get-open-group', $group_name);
-
-
         }
 
         return redirect()->back()->with('error', __('Selected group does not exist.'));
@@ -107,8 +99,7 @@ class WebController extends Controller
     {
         $groups = ExportLocalizations::getGroups();
 
-        if(!in_array($request->get('new-group'), array_values($groups))) {
-
+        if (! in_array($request->get('new-group'), array_values($groups))) {
             ExportLocalizations::createNewGroup($request->get('new-group'));
 
             return redirect()->route('laravel-localization.get-open-group', $request->get('new-group'));
@@ -116,5 +107,4 @@ class WebController extends Controller
 
         return redirect()->back()->with('error', __('This group already exists.'));
     }
-
 }

@@ -2,8 +2,8 @@
 
 namespace KgBot\LaravelLocalization\Rules;
 
-use Illuminate\Contracts\Validation\Rule;
 use Illuminate\Filesystem\Filesystem;
+use Illuminate\Contracts\Validation\Rule;
 use KgBot\LaravelLocalization\Facades\ExportLocalizations;
 
 class LocaleAlreadyExist implements Rule
@@ -29,7 +29,7 @@ class LocaleAlreadyExist implements Rule
      */
     public function passes($attribute, $value)
     {
-        return !in_array($value, ExportLocalizations::getLocales());
+        return ! in_array($value, ExportLocalizations::getLocales());
     }
 
     /**
