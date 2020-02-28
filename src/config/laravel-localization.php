@@ -11,13 +11,12 @@ return [
     'routes' => [
 
         /**
-         * Route prefix, example of route http://localhost/js/localizations.js
-         *
+         * Route prefix, example of route http://localhost/js/localizations.js.
          */
         'prefix' => env('LARAVEL_LOCALIZATION_PREFIX', '/js/localization.js'),
 
         /**
-         * Route name, defaults to assets.lang
+         * Route name, defaults to assets.lang.
          */
         'name' => env('LARAVEL_LOCALIZATION_ROUTE_NAME', 'assets.lang'),
 
@@ -33,14 +32,14 @@ return [
             : [],
 
         /**
-         * Should we enable public URL from which we can access translations
+         * Should we enable public URL from which we can access translations.
          */
         'enable' => env('LARAVEL_LOCALIZATION_ROUTE_ENABLE', false),
     ],
     'events' => [
 
         /**
-         * This package emits some events after it getters all translation messages
+         * This package emits some events after it getters all translation messages.
          *
          * Here you can change channel on which events will broadcast
          */
@@ -49,40 +48,40 @@ return [
     'caches' => [
 
         /**
-         * What cache driver do you want to use - more information: https://laravel.com/docs/5.6/cache#driver-prerequisites
+         * What cache driver do you want to use - more information: https://laravel.com/docs/5.6/cache#driver-prerequisites.
          */
         'driver' => 'file',
 
         /**
-         * Key name of the cache entry for the localization array
+         * Key name of the cache entry for the localization array.
          */
         'key' => 'localization.array',
 
         /**
-         * Timeout of the cached data in minutes - set to 0 to disable
+         * Timeout of the cached data in minutes - set to 0 to disable.
          */
         'timeout' => 60,
     ],
     'js' => [
         /**
-         * Default locale for export
+         * Default locale for export.
          */
         'default_locale' => 'en',
 
         /**
-         * root location to where JavaScript file will be exported
+         * root location to where JavaScript file will be exported.
          */
         'filepath' => resource_path('assets/js'),
 
         /**
-         * File name for JavaScript file with exported messages
+         * File name for JavaScript file with exported messages.
          */
         'filename' => 'll_messages.js',
     ],
     'paths' => [
 
         /**
-         * You can export more lang files then just files in resources/lang, for example
+         * You can export more lang files then just files in resources/lang, for example.
          *
          * In you .env file just add:
          * LARAVEL_LOCALIZATION_LANG_DIRS=resources/lang,Modules/Blog/Resources/lang
@@ -98,7 +97,7 @@ return [
     ],
     /**
      * This function will be called every time after export, it should be globally accessible function (eg. Laravel helper function)
-     * and it should accept (string) argument
+     * and it should accept (string) argument.
      */
     'export_callback' => null,
 

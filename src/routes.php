@@ -5,8 +5,6 @@
  * Date: 6/4/18
  * Time: 12:18 AM.
  */
-use KgBot\LaravelLocalization\Facades\ExportLocalizations;
-
 if (config('laravel-localization.routes.enable')) {
     /*
      * Localization

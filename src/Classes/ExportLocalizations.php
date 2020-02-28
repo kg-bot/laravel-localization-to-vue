@@ -336,13 +336,14 @@ class ExportLocalizations implements \JsonSerializable
         }
     }
 
-    public static function exportToArray(){
-        return (new ExportLocalizations)->export()->toArray();
+    public static function exportToArray()
+    {
+        return (new self)->export()->toArray();
     }
 
     protected static function executeCallback($strings)
     {
-        if($callback = config('laravel-localization.export_callback')) {
+        if ($callback = config('laravel-localization.export_callback')) {
             $strings = $callback($strings);
         }
 
