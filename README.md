@@ -48,6 +48,50 @@ It can be just one path or multiple paths, for example
 paths => [resource_path('lang'), app_path('lang'), app_path('Modules/Blog/lang')]
 ```
 
+You can run your own callback function after export, to do that you must register globally accessible function, for example 
+register `function.php` inside composer files autoload, and add your function inside `config/laravel-localization.php`,
+key `export_callback`. Example:
+```php
+// helpers/functions.php
+
+if (! function_exists('testExport')) {
+    /**
+     * Change all instances of :argument to {argument}
+     *
+     * @param $string
+     * @return void
+     *
+     */
+    function testExport($string) {
+        array_walk_recursive($string, function (&$v, $k) { $v = preg_replace('/:(\w+)/', '{$1}', $v); });
+
+        return $string;
+    }
+}
+
+
+// composer.json
+....
+"autoload": {
+        "files": [
+            "helpers/functions.php"
+        ],
+        "psr-4": {
+            "App\\": "app/"
+        },
+        "classmap": [
+            "database/seeds",
+            "database/factories"
+        ]
+    },
+....
+
+// config/laravel-localization.php
+...
+'export_callback' => 'testExport',
+...
+```
+
 # Usage
 
 This package can be used in multiple ways, I'll give examples for some of them, but there's really no limitation.

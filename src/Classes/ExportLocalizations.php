@@ -164,7 +164,7 @@ class ExportLocalizations implements \JsonSerializable
      */
     public function jsonSerialize()
     {
-        return $this->strings;
+        return self::executeCallback($this->strings);
     }
 
     /**
@@ -174,7 +174,7 @@ class ExportLocalizations implements \JsonSerializable
      */
     public function toArray()
     {
-        return $this->strings;
+        return self::executeCallback($this->strings);
     }
 
     /**
@@ -225,7 +225,7 @@ class ExportLocalizations implements \JsonSerializable
             $results[$default_key] = array_combine($buffer, $buffer);
         }
 
-        return $results;
+        return self::executeCallback($results);
     }
 
     /**
@@ -235,7 +235,7 @@ class ExportLocalizations implements \JsonSerializable
      */
     public function toCollection()
     {
-        return collect($this->strings);
+        return collect(self::executeCallback($this->strings));
     }
 
     /**
@@ -334,5 +334,18 @@ class ExportLocalizations implements \JsonSerializable
                 $language => $fileContents,
             ];
         }
+    }
+
+    public static function exportToArray(){
+        return (new ExportLocalizations)->export()->toArray();
+    }
+
+    protected static function executeCallback($strings)
+    {
+        if($callback = config('laravel-localization.export_callback')) {
+            $strings = $callback($strings);
+        }
+
+        return $strings;
     }
 }
