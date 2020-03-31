@@ -338,7 +338,7 @@ class ExportLocalizations implements \JsonSerializable
 
     public static function exportToArray()
     {
-        return app()->make(ExportLocalizations::class)->export()->toArray();
+        return app()->make(self::class)->export()->toArray();
     }
 
     protected static function executeCallback($strings)

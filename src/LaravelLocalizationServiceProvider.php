@@ -24,7 +24,7 @@ class LaravelLocalizationServiceProvider extends ServiceProvider
             return new ExportLocalizations($phpRegex, $jsonRegex);
         });
 
-        $this->app->alias( ExportLocalizations::class,'export-localization');
+        $this->app->alias(ExportLocalizations::class, 'export-localization');
 
         /*
          * Config
