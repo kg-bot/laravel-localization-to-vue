@@ -60,6 +60,6 @@ class ExportMessagesToFlat extends Command
         $this->info('Messages exported to JavaScript file, you can find them at '.$filepath.DIRECTORY_SEPARATOR
                      .$filename);
 
-        return true;
+        return 0;
     }
 }
