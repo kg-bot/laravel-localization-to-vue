@@ -18,6 +18,9 @@ Just require this package with composer.
 composer require kg-bot/laravel-localization-to-vue
 ```
 
+### Laravel 8.0+
+Laravel 8.0 require minimum of PHP 7.3. make sure you have at least PHP 7.3 before running composer.
+
 ### Laravel 5.5+
 
 Laravel 5.5 uses Package Auto-Discovery, so doesn't require you to manually add the ServiceProvider.
