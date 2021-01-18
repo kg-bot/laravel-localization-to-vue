@@ -21,6 +21,9 @@ Just require this package with composer.
 composer require kg-bot/laravel-localization-to-vue
 ```
 
+### Laravel 8.0+
+Laravel 8.0 require minimum of PHP 7.3. make sure you have at least PHP 7.3 before running composer.
+
 ### Laravel 5.5+
 
 Laravel 5.5 uses Package Auto-Discovery, so doesn't require you to manually add the ServiceProvider.
@@ -123,7 +126,7 @@ Second way would be to request it over HTTP just like any other file
 
 ```html
 <script>
-let messages = axios.get('http://localhost/js/lang.js') // This is default route which can be changed in config
+let messages = axios.get('http://localhost/js/localization.js') // This is default route which can be changed in config
 </script>
 ```
 
@@ -197,7 +200,7 @@ Laravel 5.4+ allows localization to be strutured [using a single `.json` file fo
 
 ## Routing
 
-This package exposes one route `http://localhost/js/lang.js` by default but you can change the prefix to anything you whish in config file.  
+This package exposes one route `http://localhost/js/localization.js` by default but you can change the prefix to anything you whish in config file.  
 
 You can also have a nice route name for blade templates or any other route calls, it's `route('assets.lang')` by default but it's customizable by config/environment file.
 
