@@ -5,6 +5,9 @@
 [![Monthly Downloads](https://poser.pugx.org/kg-bot/laravel-localization-to-vue/d/monthly)](https://packagist.org/packages/kg-bot/laravel-localization-to-vue)
 [![Daily Downloads](https://poser.pugx.org/kg-bot/laravel-localization-to-vue/d/daily)](https://packagist.org/packages/kg-bot/laravel-localization-to-vue)
 
+
+<a href="https://www.buymeacoffee.com/KgBot"><img src="https://img.buymeacoffee.com/button-api/?text=Buy me a beer&emoji=🍺&slug=KgBot&button_colour=5F7FFF&font_colour=ffffff&font_family=Cookie&outline_colour=000000&coffee_colour=FFDD00"></a>
+
 # Laravel Localization To Vue/JSON
 
 This package collects all localizations from resources/lang directory and it's sub-directories and converts them to plain array  
