@@ -338,7 +338,10 @@ class ExportLocalizations implements \JsonSerializable
 
     public static function exportToArray()
     {
-        return \KgBot\LaravelLocalization\Facades\ExportLocalizations::export()->toArray();
+        return (new self(
+	        config('laravel-localization.file_regexp.php', '/^.+\.php$/i'),
+	        config('laravel-localization.file_regexp.json', '/^.+\.json$/i')
+        ))->export()->toArray();
     }
 
     protected static function executeCallback($strings)

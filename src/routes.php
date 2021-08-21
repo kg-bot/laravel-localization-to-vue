@@ -9,6 +9,7 @@ if (config('laravel-localization.routes.enable')) {
     /*
      * Localization
      */
-    Route::get(config('laravel-localization.routes.prefix'), 'KgBot\LaravelLocalization\Classes\ExportLocalizations@exportToArray')->name(config('laravel-localization.routes.name'))
+    Route::get(config('laravel-localization.routes.prefix'), 'KgBot\LaravelLocalization\Classes\ExportLocalizations@exportToArray')
+         ->name(config('laravel-localization.routes.name'))
          ->middleware(config('laravel-localization.routes.middleware'));
 }
