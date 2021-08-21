@@ -9,12 +9,18 @@ use League\Flysystem\Filesystem;
 
 class ExportMessages extends Command
 {
+	/** @var \Illuminate\Config\Repository|\Illuminate\Contracts\Foundation\Application|mixed  */
+	protected $filepath;
+
+	/** @var array */
+	protected $messages;
+
     /**
      * The name and signature of the console command.
      *
      * @var string
      */
-    protected $signature = 'export:messages';
+    protected $signature = 'export:messages {format=javascript}';
 
     /**
      * The console command description.
@@ -31,6 +37,9 @@ class ExportMessages extends Command
     public function __construct()
     {
         parent::__construct();
+
+        $this->filepath = config('laravel-localization.js.filepath', resource_path('assets/js'));
+        $this->messages = ExportLocalizations::export()->toArray();
     }
 
     /**
@@ -40,26 +49,65 @@ class ExportMessages extends Command
      */
     public function handle()
     {
-        $messages = ExportLocalizations::export()->toArray();
+    	$format = $this->argument('format');
 
-        $filepath = config('laravel-localization.js.filepath', resource_path('assets/js'));
-        $filename = config('laravel-localization.js.filename', 'll_messages.js');
+    	if($format === 'javascript') {
+    		return $this->toJavaScript();
+	    }
+    	if($format === 'json') {
+    		return $this->toJson();
+	    }
 
-        $adapter = new Local($filepath);
-        $filesystem = new Filesystem($adapter);
+	    $this->error( "Format {$format} is not currently supported, you can use callback function if you need additional modification of exported array.");
 
-        $contents = 'export default '.json_encode($messages);
+	    return 1;
+    }
 
-        if ($filesystem->has($filename)) {
-            $filesystem->delete($filename);
-            $filesystem->write($filename, $contents);
-        } else {
-            $filesystem->write($filename, $contents);
-        }
+    protected function toJavaScript() {
+	    $filename = config('laravel-localization.js.filename', 'll_messages.js');
 
-        $this->info('Messages exported to JavaScript file, you can find them at '.$filepath.DIRECTORY_SEPARATOR
-                     .$filename);
+	    $adapter = new Local($this->filepath);
+	    $filesystem = new Filesystem($adapter);
 
-        return 0;
+	    $contents = 'export default '.json_encode($this->messages);
+
+	    if ($filesystem->has($filename)) {
+		    $filesystem->delete($filename);
+		    $filesystem->write($filename, $contents);
+	    } else {
+		    $filesystem->write($filename, $contents);
+	    }
+
+	    $this->info('Messages exported to JavaScript file, you can find them at '.$this->filepath.DIRECTORY_SEPARATOR
+	                .$filename);
+
+	    return 0;
+    }
+
+    protected function toJson() {
+
+	    foreach ($this->messages as $language_key => $translations) {
+		    foreach ($translations as $translation_key => $translate) {
+			    $filepath = "$this->filepath/$language_key";
+			    $filename = "$translation_key.json";
+
+			    $adapter = new Local($filepath);
+			    $filesystem = new Filesystem($adapter);
+
+			    $contents = json_encode($translate, JSON_PRETTY_PRINT);
+
+
+			    if ($filesystem->has($filename)) {
+				    $filesystem->delete($filename);
+				    $filesystem->write($filename, $contents);
+			    } else {
+				    $filesystem->write($filename, $contents);
+			    }
+		    }
+	    }
+
+	    $this->info('Messages exported to JSON files, you can find them at '.$this->filepath);
+
+	    return 0;
     }
 }
