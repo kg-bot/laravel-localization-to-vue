@@ -30,25 +30,15 @@ class ExportMessages extends Command
     protected $description = 'Export all localization messages to JavaScript file';
 
     /**
-     * Create a new command instance.
-     *
-     * @return void
-     */
-    public function __construct()
-    {
-        parent::__construct();
-
-        $this->filepath = config('laravel-localization.js.filepath', resource_path('assets/js'));
-        $this->messages = ExportLocalizations::export()->toArray();
-    }
-
-    /**
      * Execute the console command.
      *
      * @return mixed
      */
     public function handle()
     {
+        $this->filepath = config('laravel-localization.js.filepath', resource_path('assets/js'));
+        $this->messages = ExportLocalizations::export()->toArray();
+
         $format = $this->argument('format');
 
         if ($format === 'javascript') {
