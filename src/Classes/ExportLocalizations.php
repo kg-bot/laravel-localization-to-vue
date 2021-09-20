@@ -41,8 +41,8 @@ class ExportLocalizations implements \JsonSerializable
     /**
      * ExportLocalizations constructor.
      *
-     * @param string $phpRegex
-     * @param string $jsonRegex
+     * @param  string  $phpRegex
+     * @param  string  $jsonRegex
      */
     public function __construct($phpRegex = '/^.+\.php$/i', $jsonRegex = '/^.+\.json$/i')
     {
@@ -98,8 +98,7 @@ class ExportLocalizations implements \JsonSerializable
     /**
      * Find available language files and parse them to array.
      *
-     * @param string $path
-     *
+     * @param  string  $path
      * @return array
      */
     protected function findLanguageFiles($path)
@@ -181,9 +180,8 @@ class ExportLocalizations implements \JsonSerializable
      * If you need special format of array that's recognised by some npm localization packages as Lang.js
      * https://github.com/rmariuzzo/Lang.js use this method.
      *
-     * @param array  $array
-     * @param string $prefix
-     *
+     * @param  array  $array
+     * @param  string  $prefix
      * @return array
      */
     public function toFlat($prefix = '.')
@@ -241,7 +239,7 @@ class ExportLocalizations implements \JsonSerializable
     /**
      * Method to parse language files.
      *
-     * @param string $file
+     * @param  string  $file
      */
     protected function parseLangFiles($file, $key, $dir)
     {
@@ -272,7 +270,7 @@ class ExportLocalizations implements \JsonSerializable
     /**
      * Method to parse language files from vendor folder.
      *
-     * @param string $file
+     * @param  string  $file
      */
     protected function parseVendorFiles($file, $key, $dir)
     {
