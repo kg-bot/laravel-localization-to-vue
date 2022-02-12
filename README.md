@@ -15,14 +15,24 @@ which can later be converted to JSON object and used with libraries like Vue, An
 
 ## Installing
 
-Just require this package with composer.
+#### Laravel before version 9
 
 ```
-composer require kg-bot/laravel-localization-to-vue
+composer require kg-bot/laravel-localization-to-vue:^1
 ```
 
-### Laravel 8.0+
-Laravel 8.0 require minimum of PHP 7.3. make sure you have at least PHP 7.3 before running composer.
+#### Laravel 9
+
+```
+composer require kg-bot/laravel-localization-to-vue:^2
+```
+
+
+### Laravel 8+
+Laravel 8 requires minimum of PHP 7.3. make sure you have at least PHP 7.3 before running composer.
+
+### Laravel 9+
+Laravel 9 requires minimum of PHP 8.0.2 make sure you have at least PHP 8.0.2 before running composer.
 
 ### Laravel 5.5+
 
@@ -46,12 +56,12 @@ You can export config by running
 php artisan vendor:publish --provider="KgBot\LaravelLocalization\LaravelLocalizationServiceProvider" --tag=config
 ```
 
-if you want to parse multiple language directories or some other directory except `resources/lang` you can add multiple 
+if you want to parse multiple language directories or some other directory except `lang_path()` you can add multiple 
 paths in config `paths.lang_dirs` inside array.
 
 It can be just one path or multiple paths, for example
 ```php
-paths => [resource_path('lang'), app_path('lang'), app_path('Modules/Blog/lang')]
+paths => [lang_path(), app_path('lang'), app_path('Modules/Blog/lang')]
 ```
 
 You can run your own callback function after export, to do that you must register globally accessible function, for example 
