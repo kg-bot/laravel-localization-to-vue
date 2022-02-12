@@ -4,8 +4,8 @@ namespace KgBot\LaravelLocalization\Console\Commands;
 
 use Illuminate\Console\Command;
 use KgBot\LaravelLocalization\Facades\ExportLocalizations;
-use League\Flysystem\Adapter\Local;
 use League\Flysystem\Filesystem;
+use League\Flysystem\Local\LocalFilesystemAdapter as Local;
 
 class ExportMessages extends Command
 {
