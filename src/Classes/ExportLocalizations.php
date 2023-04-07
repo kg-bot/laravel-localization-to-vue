@@ -66,7 +66,6 @@ class ExportLocalizations implements \JsonSerializable
 
         foreach (config('laravel-localization.paths.lang_dirs') as $dir) {
             try {
-
                 // Collect language files and build array with translations
                 $files = $this->findLanguageFiles($dir);
 
