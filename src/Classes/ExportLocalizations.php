@@ -160,7 +160,7 @@ class ExportLocalizations implements \JsonSerializable
      *
      * @return array
      */
-    public function jsonSerialize()
+    public function jsonSerialize(): mixed
     {
         return self::executeCallback($this->strings);
     }
