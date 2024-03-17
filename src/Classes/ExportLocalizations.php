@@ -149,9 +149,9 @@ class ExportLocalizations implements \JsonSerializable
         });
 
         return [
-            'lang'   => array_values($nonVendorFiles),
+            'lang' => array_values($nonVendorFiles),
             'vendor' => array_values($vendorFiles),
-            'json'   => array_values($jsonFiles),
+            'json' => array_values($jsonFiles),
         ];
     }
 
